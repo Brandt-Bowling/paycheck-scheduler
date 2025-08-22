@@ -1,15 +1,17 @@
-import React, { useState, useMemo } from "react";
+import FloatingToolbar from "./components/FloatingToolbar";
+import { useState, useMemo } from "react";
 import Calendar from "./components/Calendar";
-import PaycheckModal from "./components/PaycheckModal";
 import EventSummaryModal from "./components/EventSummaryModal";
-import CalendarIcon from "./components/icons/CalendarIcon";
-import PayIcon from "./components/icons/PayIcon";
+import PaycheckModal from "./components/PaycheckModal";
 import { parseLocalDate } from "./utils/dateHelpers";
+
+type NavKey = "calendar" | "paychecks" | "settings";
 
 const App: React.FC = () => {
   const [selectedDates, setSelectedDates] = useState(new Set<string>());
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<NavKey>("calendar");
 
   const handleDateSelect = (dateString: string): void => {
     setSelectedDates((prevDates) => {
@@ -36,9 +38,9 @@ const App: React.FC = () => {
     [selectedDates]
   );
 
-  return (
-    // Apply global background and text color here
-    <div className="bg-slate-900 text-slate-100 min-h-screen">
+  let mainContent;
+  if (selectedTab === "calendar") {
+    mainContent = (
       <main className="w-full px-3 pt-6 sm:pt-10 pb-28">
         <div className="mx-auto max-w-md">
           <div className="bg-slate-800 rounded-3xl shadow-xl p-5 sm:p-8">
@@ -67,10 +69,12 @@ const App: React.FC = () => {
                           key={dateStr}
                           className="inline-block bg-sky-700 text-sky-100 px-3 py-1.5 rounded-full text-xs font-medium mr-1.5 mb-1.5"
                         >
-                          {parsedDate ? parsedDate.toLocaleDateString(undefined, {
-                            month: "short",
-                            day: "numeric",
-                          }) : 'Invalid Date'}
+                          {parsedDate
+                            ? parsedDate.toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                              })
+                            : "Invalid Date"}
                         </span>
                       );
                     })
@@ -79,27 +83,60 @@ const App: React.FC = () => {
             </div>
           </div>
         </div>
+        <FloatingToolbar
+          onOpenEventModal={handleOpenEventModal}
+          onOpenPayModal={() => setIsPayModalOpen(true)}
+        />
       </main>
-
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 p-2 bg-slate-800/80 backdrop-blur-sm rounded-full shadow-lg">
-        <div className="flex space-x-2">
-          <button
-            onClick={handleOpenEventModal}
-            className="flex items-center space-x-2 py-2.5 px-4 rounded-full font-medium text-sm bg-sky-600 hover:bg-sky-700 text-white transition-colors"
-          >
-            <CalendarIcon />
-            <span>Templates</span>
-          </button>
-          <button
-            onClick={() => setIsPayModalOpen(true)}
-            className="flex items-center space-x-2 py-2.5 px-4 rounded-full font-medium text-sm bg-teal-600 hover:bg-teal-700 text-white transition-colors"
-          >
-            <PayIcon />
-            <span>Pay Estimator</span>
-          </button>
+    );
+  } else if (selectedTab === "paychecks") {
+    mainContent = (
+      <main className="w-full px-3 pt-6 sm:pt-10 pb-28">
+        <div className="mx-auto max-w-md">
+          <div className="bg-slate-800 rounded-3xl shadow-xl p-5 sm:p-8">
+            <header className="text-center mb-8">
+              <h1 className="text-3xl sm:text-4xl font-medium text-slate-100">
+                Paychecks
+              </h1>
+              <p className="text-sm text-slate-400 mt-2">
+                View and manage your paychecks.
+              </p>
+            </header>
+            <PaycheckModal
+              isOpen={true}
+              onClose={() => {}}
+              selectedDates={selectedDates}
+            />
+          </div>
         </div>
-      </div>
+      </main>
+    );
+  } else if (selectedTab === "settings") {
+    mainContent = (
+      <main className="w-full px-3 pt-6 sm:pt-10 pb-28">
+        <div className="mx-auto max-w-md">
+          <div className="bg-slate-800 rounded-3xl shadow-xl p-5 sm:p-8">
+            <header className="text-center mb-8">
+              <h1 className="text-3xl sm:text-4xl font-medium text-slate-100">
+                Settings
+              </h1>
+              <p className="text-sm text-slate-400 mt-2">
+                App settings and preferences (mockup).
+              </p>
+            </header>
+            <div className="text-slate-300">Settings content goes here.</div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
+  return (
+    <div
+      className="bg-slate-900 text-slate-100 min-h-screen"
+      style={{ paddingBottom: 64 }}
+    >
+      {mainContent}
       <PaycheckModal
         isOpen={isPayModalOpen}
         onClose={() => setIsPayModalOpen(false)}
@@ -112,5 +149,5 @@ const App: React.FC = () => {
       />
     </div>
   );
-}
+};
 export default App;
