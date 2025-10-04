@@ -60,7 +60,18 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
   }, [currentDate]);
 
   return (
-    <div>
+    <div className="flex-1 flex flex-col pt-safe-top px-4">
+      {/* Header */}
+      <header className="text-center pt-8 pb-4">
+        <h1 className="text-2xl font-medium text-slate-100">
+          Quick Event Adder
+        </h1>
+        <p className="text-sm text-slate-400/80 mt-1">
+          Select dates to add a "Work" event
+        </p>
+      </header>
+
+      {/* Month Navigation */}
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={handlePrevMonth}
@@ -80,50 +91,54 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
           <ChevronRightIcon />
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base">
-        {DAY_NAMES.map((day) => (
-          <div
-            key={day}
-            className="font-medium text-slate-500 py-2 text-xs sm:text-sm"
-          >
-            {day}
-          </div>
-        ))}
-        {calendarGridData.map((item, index) => {
-          if (item.type === "blank" || !item.dateString) { // Added !item.dateString for type safety
+
+      {/* Calendar Grid Wrapper */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base">
+          {DAY_NAMES.map((day) => (
+            <div
+              key={day}
+              className="font-medium text-slate-500 py-2 text-xs sm:text-sm"
+            >
+              {day}
+            </div>
+          ))}
+          {calendarGridData.map((item, index) => {
+            if (item.type === "blank" || !item.dateString) { // Added !item.dateString for type safety
+              return (
+                <div
+                  key={`blank-${index}`}
+                  className="calendar-day disabled p-1 sm:p-2 border border-transparent rounded-xl opacity-60"
+                ></div>
+              );
+            }
+
+            const isSelected = selectedDates.has(item.dateString);
+            const isToday = item.dateString === todayDateString;
+
+            let dayClasses =
+              "calendar-day text-slate-300 p-1 sm:p-2 border border-slate-700 hover:border-slate-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center aspect-square";
+            if (isSelected) {
+              dayClasses += " selected";
+            }
+            if (isToday) {
+              dayClasses += " today";
+              if (!isSelected) {
+                dayClasses += " text-sky-400";
+              }
+            }
+
             return (
               <div
-                key={`blank-${index}`}
-                className="calendar-day disabled p-1 sm:p-2 border border-transparent rounded-xl opacity-60"
-              ></div>
+                key={item.dateString}
+                className={dayClasses}
+                onClick={() => onDateSelect(item.dateString as string)} // Ensure item.dateString is string
+              >
+                {item.day}
+              </div>
             );
-          }
-
-          const isSelected = selectedDates.has(item.dateString);
-          const isToday = item.dateString === todayDateString;
-
-          let dayClasses =
-            "calendar-day text-slate-300 p-1 sm:p-2 border border-slate-700 hover:border-slate-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center aspect-square";
-          if (isSelected) {
-            dayClasses += " selected";
-          }
-          if (isToday) {
-            dayClasses += " today";
-            if (!isSelected) {
-              dayClasses += " text-sky-400";
-            }
-          }
-
-          return (
-            <div
-              key={item.dateString}
-              className={dayClasses}
-              onClick={() => onDateSelect(item.dateString as string)} // Ensure item.dateString is string
-            >
-              {item.day}
-            </div>
-          );
-        })}
+          })}
+        </div>
       </div>
     </div>
   );
