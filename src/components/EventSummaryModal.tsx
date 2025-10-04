@@ -13,16 +13,56 @@ interface PreparedEvent {
   date: string;
 }
 
-const EventSummaryModal: React.FC<EventSummaryModalProps> = ({ isOpen, onClose, selectedDates }) => {
+interface EventTemplate {
+  id: string;
+  name: string;
+  description: string;
+  personOptions?: string[];
+}
+
+const EVENT_TEMPLATES: EventTemplate[] = [
+  {
+    id: "school-dropoff",
+    name: "School Drop Off",
+    description: "School drop off duty",
+    personOptions: ["Brandt", "Hannah"],
+  },
+  {
+    id: "school-pickup",
+    name: "School Pick Up",
+    description: "School pick up duty",
+    personOptions: ["Brandt", "Hannah"],
+  },
+  {
+    id: "office-day",
+    name: "Office Day",
+    description: "Brandt's office day",
+  },
+];
+
+const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
+  isOpen,
+  onClose,
+  selectedDates,
+}) => {
+  const [selectedTemplate, setSelectedTemplate] =
+    React.useState<string>("school-dropoff");
+  const [selectedPerson, setSelectedPerson] = React.useState<string>("Brandt");
+
   const preparedEvents = useMemo<PreparedEvent[]>(() => {
+    const template = EVENT_TEMPLATES.find((t) => t.id === selectedTemplate);
+    if (!template) return [];
+
+    const person = template.personOptions ? `(${selectedPerson})` : "";
+
     return Array.from(selectedDates)
       .sort()
       .map((dateStr) => ({
-        summary: "Work",
-        description: "Quickly added event.",
+        summary: `${template.name} ${person}`,
+        description: template.description,
         date: dateStr,
       }));
-  }, [selectedDates]);
+  }, [selectedDates, selectedTemplate, selectedPerson]);
 
   const handleCopy = async (): Promise<void> => {
     const json = JSON.stringify(preparedEvents, null, 2);
@@ -31,7 +71,9 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({ isOpen, onClose, 
       console.log("Copied to clipboard");
     } catch (err) {
       console.error("Failed to copy: ", err);
-      alert("Failed to copy to clipboard. Check console for details or enable clipboard permissions.");
+      alert(
+        "Failed to copy to clipboard. Check console for details or enable clipboard permissions."
+      );
     }
   };
 
@@ -41,12 +83,16 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({ isOpen, onClose, 
     <>
       {/* Modal Backdrop */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-60 z-40 transition-opacity ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+        className={`fixed inset-0 bg-black bg-opacity-60 z-40 transition-opacity ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
         onClick={onClose}
       ></div>
       {/* Modal Content Wrapper/Dialog */}
       <div
-        className={`fixed inset-0 z-45 flex items-center justify-center p-4 transition-opacity ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+        className={`fixed inset-0 z-45 flex items-center justify-center p-4 transition-opacity ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
         style={{ display: isOpen ? "flex" : "none" }} // Keep display logic for final visibility control
       >
         <div className="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-md relative">
@@ -58,37 +104,94 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({ isOpen, onClose, 
             &times;
           </button>
           <h2 className="text-2xl font-medium text-slate-100 mb-5">
-            Prepared Event Templates
+            Create Events
           </h2>
-          <div className="text-sm space-y-2.5 max-h-64 overflow-y-auto bg-slate-700 p-3.5 rounded-xl">
-            {preparedEvents.length > 0 ? preparedEvents.map((event) => {
-              const eventDate = parseLocalDate(event.date);
-              return (
-                <div
-                  key={event.date}
-                  className="border-b border-slate-600 pb-2.5 mb-2.5 last:border-b-0 last:mb-0"
-                >
-                  <p className="font-medium text-slate-100">{event.summary}</p>
-                  <p className="text-slate-400">
-                    Date:{" "}
-                    {eventDate ? eventDate.toLocaleDateString(undefined, {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                    }) : 'Invalid Date'}
-                  </p>
+
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Event Template
+              </label>
+              <select
+                value={selectedTemplate}
+                onChange={(e) => setSelectedTemplate(e.target.value)}
+                className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                {EVENT_TEMPLATES.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {EVENT_TEMPLATES.find((t) => t.id === selectedTemplate)
+              ?.personOptions && (
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Person
+                </label>
+                <div className="flex gap-3">
+                  {EVENT_TEMPLATES.find(
+                    (t) => t.id === selectedTemplate
+                  )?.personOptions?.map((person) => (
+                    <button
+                      key={person}
+                      onClick={() => setSelectedPerson(person)}
+                      className={`flex-1 py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
+                        selectedPerson === person
+                          ? "bg-primary-600 text-white"
+                          : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                      }`}
+                    >
+                      {person}
+                    </button>
+                  ))}
                 </div>
-              );
-            }) : (
-              <p className="text-slate-400">No dates selected to generate templates.</p>
+              </div>
             )}
           </div>
+
+          <div className="text-sm space-y-2.5 max-h-64 overflow-y-auto bg-slate-700 p-3.5 rounded-xl mb-6">
+            <h3 className="text-sm font-medium text-slate-300 mb-2">
+              Selected Dates Preview
+            </h3>
+            {preparedEvents.length > 0 ? (
+              preparedEvents.map((event) => {
+                const eventDate = parseLocalDate(event.date);
+                return (
+                  <div
+                    key={event.date}
+                    className="border-b border-slate-600 pb-2.5 mb-2.5 last:border-b-0 last:mb-0"
+                  >
+                    <p className="font-medium text-slate-100">
+                      {event.summary}
+                    </p>
+                    <p className="text-slate-400">
+                      {eventDate
+                        ? eventDate.toLocaleDateString(undefined, {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : "Invalid Date"}
+                    </p>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-slate-400">
+                No dates selected to generate events.
+              </p>
+            )}
+          </div>
+
           <button
             onClick={handleCopy}
             disabled={preparedEvents.length === 0}
-            className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Copy Details
+            Copy Events
           </button>
         </div>
       </div>
