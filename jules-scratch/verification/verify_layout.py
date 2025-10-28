@@ -2,7 +2,8 @@ from playwright.sync_api import sync_playwright, expect
 
 def run(playwright):
     browser = playwright.chromium.launch()
-    page = browser.new_page()
+    # Use a mobile viewport in portrait orientation
+    page = browser.new_page(viewport={'width': 375, 'height': 812})
     page.goto("http://localhost:5173")
 
     # Wait for the calendar to be visible

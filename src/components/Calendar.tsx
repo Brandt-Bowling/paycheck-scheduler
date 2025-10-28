@@ -93,8 +93,8 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
       </div>
 
       {/* Calendar Grid Wrapper */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base">
+      <div className="flex-1 overflow-y-auto flex flex-col">
+        <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base flex-1">
           {DAY_NAMES.map((day) => (
             <div
               key={day}
@@ -117,7 +117,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
             const isToday = item.dateString === todayDateString;
 
             let dayClasses =
-              "calendar-day text-slate-300 p-1 sm:p-2 border border-slate-700 hover:border-slate-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center aspect-square";
+            "calendar-day text-slate-300 p-1 sm:p-2 border border-slate-700 hover:border-slate-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center";
             if (isSelected) {
               dayClasses += " selected";
             }
