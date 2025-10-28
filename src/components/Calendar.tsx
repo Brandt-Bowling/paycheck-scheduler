@@ -92,9 +92,10 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
         </button>
       </div>
 
-      {/* Calendar Grid Wrapper */}
-      <div className="flex-1 overflow-y-auto flex flex-col">
-        <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base flex-1">
+      {/* Calendar Grid */}
+      <div className="flex-1 flex flex-col pb-4">
+        {/* Day Names Header */}
+        <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base">
           {DAY_NAMES.map((day) => (
             <div
               key={day}
@@ -103,8 +104,11 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
               {day}
             </div>
           ))}
+        </div>
+        {/* Dates Grid */}
+        <div className="flex-1 grid grid-cols-7 grid-rows-6 gap-1.5">
           {calendarGridData.map((item, index) => {
-            if (item.type === "blank" || !item.dateString) { // Added !item.dateString for type safety
+            if (item.type === "blank" || !item.dateString) {
               return (
                 <div
                   key={`blank-${index}`}
@@ -117,7 +121,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
             const isToday = item.dateString === todayDateString;
 
             let dayClasses =
-            "calendar-day text-slate-300 p-1 sm:p-2 border border-slate-700 hover:border-slate-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center";
+              "calendar-day text-slate-300 border border-slate-700 hover:border-slate-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center";
             if (isSelected) {
               dayClasses += " selected";
             }
@@ -132,7 +136,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
               <div
                 key={item.dateString}
                 className={dayClasses}
-                onClick={() => onDateSelect(item.dateString as string)} // Ensure item.dateString is string
+                onClick={() => onDateSelect(item.dateString as string)}
               >
                 {item.day}
               </div>

@@ -6,8 +6,10 @@ def run(playwright):
     page = browser.new_page(viewport={'width': 375, 'height': 812})
     page.goto("http://localhost:5173")
 
-    # Wait for the calendar to be visible
-    expect(page.locator(".grid.grid-cols-7")).to_be_visible()
+    # Wait for the main calendar grid to be visible
+    # Using a more specific locator to avoid ambiguity
+    main_calendar_grid = page.locator(".grid.grid-cols-7.grid-rows-6")
+    expect(main_calendar_grid).to_be_visible()
 
     # Select a few dates to make the FAB appear
     # Using a more specific locator to target the clickable day element
