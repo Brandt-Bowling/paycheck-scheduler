@@ -47,27 +47,37 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
         {/* Speed Dial FAB Menu */}
         <div
-          className={`flex flex-col items-center gap-3 transition-all duration-200 ease-in-out ${
+          className={`flex flex-col items-end gap-3 transition-all duration-200 ease-in-out ${
             isExpanded
               ? "opacity-100 translate-y-0"
               : "opacity-0 -translate-y-2 pointer-events-none"
           }`}
         >
           {/* Secondary FABs */}
-          <button
-            onClick={onOpenPayModal}
-            className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
-            aria-label="Pay Estimator"
-          >
-            <PayIcon />
-          </button>
-          <button
-            onClick={onOpenEventModal}
-            className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
-            aria-label="Templates"
-          >
-            <CalendarIcon />
-          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-white bg-slate-700 p-2 rounded-lg shadow-md">
+              Pay Estimator
+            </span>
+            <button
+              onClick={onOpenPayModal}
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
+              aria-label="Pay Estimator"
+            >
+              <PayIcon />
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-white bg-slate-700 p-2 rounded-lg shadow-md">
+              Templates
+            </span>
+            <button
+              onClick={onOpenEventModal}
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
+              aria-label="Templates"
+            >
+              <CalendarIcon />
+            </button>
+          </div>
         </div>
       </div>
     </div>
