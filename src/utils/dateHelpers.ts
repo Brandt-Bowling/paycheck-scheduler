@@ -29,3 +29,27 @@ export const parseLocalDate = (dateString: string | null | undefined): Date | nu
   }
   return null;
 };
+
+export const createGoogleCalendarUrl = (event: {
+  summary: string;
+  description: string;
+  date: string;
+}): string => {
+  const startDate = parseLocalDate(event.date);
+  if (!startDate) return "";
+
+  const endDate = new Date(startDate);
+  endDate.setDate(startDate.getDate() + 1);
+
+  const formatDate = (date: Date) =>
+    date.toISOString().replace(/-/g, "").split("T")[0];
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: event.summary,
+    details: event.description,
+    dates: `${formatDate(startDate)}/${formatDate(endDate)}`,
+  });
+
+  return `https://www.google.com/calendar/render?${params.toString()}`;
+};

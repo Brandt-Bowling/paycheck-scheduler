@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { parseLocalDate } from "../utils/dateHelpers";
+import { createGoogleCalendarUrl, parseLocalDate } from "../utils/dateHelpers";
 
 interface EventSummaryModalProps {
   isOpen: boolean;
@@ -64,17 +64,11 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
       }));
   }, [selectedDates, selectedTemplate, selectedPerson]);
 
-  const handleCopy = async (): Promise<void> => {
-    const json = JSON.stringify(preparedEvents, null, 2);
-    try {
-      await navigator.clipboard.writeText(json);
-      console.log("Copied to clipboard");
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-      alert(
-        "Failed to copy to clipboard. Check console for details or enable clipboard permissions."
-      );
-    }
+  const handleAddToCalendar = (): void => {
+    preparedEvents.forEach((event) => {
+      const url = createGoogleCalendarUrl(event);
+      window.open(url, "_blank");
+    });
   };
 
   if (!isOpen) return null;
@@ -187,11 +181,11 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
           </div>
 
           <button
-            onClick={handleCopy}
+            onClick={handleAddToCalendar}
             disabled={preparedEvents.length === 0}
             className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Copy Events
+            Add to Google Calendar
           </button>
         </div>
       </div>
