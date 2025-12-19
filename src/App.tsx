@@ -48,7 +48,7 @@ const App: React.FC = () => {
             onDateSelect={handleDateSelect}
           />
         </div>
-        <div className="row-start-1 col-start-1 pointer-events-none">
+        <div className="row-start-1 col-start-1 pointer-events-none grid items-end justify-end p-4 sm:p-6">
           <FloatingToolbar
             onOpenEventModal={handleOpenEventModal}
             onOpenPayModal={() => setIsPayModalOpen(true)}
