@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   createIcsContent,
   parseLocalDate,
@@ -50,11 +50,15 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   const [targetedDates, setTargetedDates] = useState<Set<string>>(new Set());
   const [queuedEvents, setQueuedEvents] = useState<CalendarEvent[]>([]);
 
+  // Mobile Tab State
+  const [activeTab, setActiveTab] = useState<'configure' | 'review'>('configure');
+
   // Initialize targetedDates when modal opens
   useEffect(() => {
     if (isOpen) {
       setTargetedDates(new Set(selectedDates));
       setQueuedEvents([]); // Reset queue on new open
+      setActiveTab('configure'); // Reset tab
     }
   }, [isOpen, selectedDates]);
 
@@ -124,9 +128,9 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
       });
 
     setQueuedEvents((prev) => [...prev, ...newEvents]);
-    // Optionally clear targeted dates or keep them.
-    // Keeping them allows for "Add Office Day to these same dates" quickly.
-    // But maybe visual feedback is needed.
+    // Optionally visualize success or switch tabs?
+    // Staying on configure is better for rapid entry, but let's give a visual cue if possible.
+    // For now, the user can see the Review tab count update.
   };
 
   const handleRemoveEvent = (index: number) => {
@@ -169,24 +173,49 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         }`}
         style={{ display: isOpen ? "flex" : "none" }}
       >
-        <div className="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-2xl relative flex flex-col max-h-[90vh]">
+        <div className="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-4xl relative flex flex-col max-h-[90vh] overflow-hidden">
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 text-slate-400 hover:text-slate-200 p-1 leading-none text-2xl"
+            className="absolute top-3 right-3 text-slate-400 hover:text-slate-200 p-1 leading-none text-2xl z-10"
             aria-label="Close"
           >
             &times;
           </button>
 
-          <h2 className="text-2xl font-medium text-slate-100 mb-5">
+          <h2 className="text-2xl font-medium text-slate-100 mb-5 shrink-0">
             Create Events
           </h2>
 
-          <div className="flex flex-col md:flex-row gap-6 overflow-hidden">
+          {/* Mobile Tab Switcher */}
+          <div className="flex md:hidden bg-slate-700/50 p-1 rounded-xl mb-4 shrink-0">
+            <button
+                onClick={() => setActiveTab('configure')}
+                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                    activeTab === 'configure'
+                    ? "bg-slate-600 text-white shadow-sm"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+            >
+                Configure
+            </button>
+            <button
+                onClick={() => setActiveTab('review')}
+                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                    activeTab === 'review'
+                    ? "bg-slate-600 text-white shadow-sm"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+            >
+                Review <span className="ml-1 bg-primary-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">{queuedEvents.length}</span>
+            </button>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-6 overflow-hidden flex-1 min-h-0">
             {/* Left Column: Configuration */}
-            <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
+            <div className={`flex-1 flex-col gap-4 overflow-y-auto custom-scrollbar ${activeTab === 'configure' ? 'flex' : 'hidden md:flex'}`}>
+
               {/* Template Selection */}
-              <div className="bg-slate-700/50 p-4 rounded-xl space-y-3">
+              <div className="bg-slate-700/50 p-4 rounded-xl space-y-3 shrink-0">
                 <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
                   1. Configure Event
                 </h3>
@@ -233,8 +262,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
               </div>
 
               {/* Date Selection */}
-              <div className="bg-slate-700/50 p-4 rounded-xl space-y-3 flex-1">
-                 <div className="flex justify-between items-center">
+              <div className="bg-slate-700/50 p-4 rounded-xl space-y-3 flex-1 overflow-y-auto">
+                 <div className="flex justify-between items-center sticky top-0 bg-slate-700/0 backdrop-blur-sm pb-2 z-10">
                     <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
                       2. Select Dates
                     </h3>
@@ -245,7 +274,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                     </div>
                  </div>
 
-                 <div className="flex flex-wrap gap-2">
+                 <div className="flex flex-wrap gap-2 content-start">
                     {availableDatesList.map((dateStr) => {
                          const date = parseLocalDate(dateStr);
                          const isSelected = targetedDates.has(dateStr);
@@ -269,15 +298,15 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
               <button
                 onClick={handleAddEvents}
                 disabled={targetedDates.size === 0}
-                className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
               >
                 Add to Queue
               </button>
             </div>
 
             {/* Right Column: Review */}
-            <div className="flex-1 bg-slate-900/50 rounded-xl p-4 flex flex-col min-h-[300px]">
-                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">
+            <div className={`flex-1 bg-slate-900/50 rounded-xl p-4 flex-col min-h-0 ${activeTab === 'review' ? 'flex' : 'hidden md:flex'}`}>
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 shrink-0">
                   Queued Events ({queuedEvents.length})
                 </h3>
 
@@ -302,7 +331,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                                     </div>
                                     <button
                                         onClick={() => handleRemoveEvent(idx)}
-                                        className="text-slate-500 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="text-slate-500 hover:text-red-400 p-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
                                         aria-label="Remove event"
                                     >
                                         &times;
@@ -313,7 +342,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                     )}
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-slate-700">
+                <div className="mt-4 pt-4 border-t border-slate-700 shrink-0">
                     <button
                         onClick={handleDownloadIcs}
                         disabled={queuedEvents.length === 0}
