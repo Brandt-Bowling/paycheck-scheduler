@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { createGoogleCalendarUrl, parseLocalDate } from "../utils/dateHelpers";
+import { createIcsContent, parseLocalDate, CalendarEvent } from "../utils/dateHelpers";
 
 interface EventSummaryModalProps {
   isOpen: boolean;
@@ -7,11 +7,16 @@ interface EventSummaryModalProps {
   selectedDates: Set<string>;
 }
 
-interface PreparedEvent {
-  summary: string;
-  description: string;
-  date: string;
-}
+// Reuse CalendarEvent type but it's identical to what we need
+// interface PreparedEvent {
+//   summary: string;
+//   description: string;
+//   date: string;
+//   startTime?: string;
+//   endTime?: string;
+//   location?: string;
+// }
+// Use CalendarEvent from helpers
 
 interface EventTemplate {
   id: string;
@@ -49,26 +54,65 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
     React.useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = React.useState<string>("Brandt");
 
-  const preparedEvents = useMemo<PreparedEvent[]>(() => {
+  const preparedEvents = useMemo<CalendarEvent[]>(() => {
     const template = EVENT_TEMPLATES.find((t) => t.id === selectedTemplate);
     if (!template) return [];
 
     const person = template.personOptions ? `(${selectedPerson})` : "";
+    const commonLocation = "1300 N Prospect Rd, Ypsilanti, MI 48198";
 
     return Array.from(selectedDates)
       .sort()
-      .map((dateStr) => ({
-        summary: `${template.name} ${person}`,
-        description: template.description,
-        date: dateStr,
-      }));
+      .map((dateStr) => {
+        const date = parseLocalDate(dateStr);
+        let startTime: string | undefined;
+        let endTime: string | undefined;
+        let location: string | undefined;
+
+        if (template.id === "school-dropoff") {
+            startTime = "07:50";
+            endTime = "08:00";
+            location = commonLocation;
+        } else if (template.id === "school-pickup" && date) {
+            const day = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+            // Mon(1), Wed(3), Fri(5) -> 2:55-3:00pm (14:55-15:00)
+            // Tue(2), Thu(4) -> 11:55am-12:00pm (11:55-12:00)
+            if (day === 2 || day === 4) {
+                startTime = "11:55";
+                endTime = "12:00";
+            } else {
+                // Default to M/W/F time for others or specifically check 1,3,5
+                startTime = "14:55";
+                endTime = "15:00";
+            }
+            location = commonLocation;
+        } else if (template.id === "office-day") {
+            // No specific time requested
+        }
+
+        return {
+          summary: `${template.name} ${person}`,
+          description: template.description,
+          date: dateStr,
+          startTime,
+          endTime,
+          location,
+        };
+      });
   }, [selectedDates, selectedTemplate, selectedPerson]);
 
-  const handleAddToCalendar = (): void => {
-    preparedEvents.forEach((event) => {
-      const url = createGoogleCalendarUrl(event);
-      window.open(url, "_blank");
-    });
+  const handleDownloadIcs = (): void => {
+    if (preparedEvents.length === 0) return;
+
+    const content = createIcsContent(preparedEvents);
+    const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "calendar_events.ics");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (!isOpen) return null;
@@ -153,13 +197,17 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
             {preparedEvents.length > 0 ? (
               preparedEvents.map((event) => {
                 const eventDate = parseLocalDate(event.date);
+                const timeString = event.startTime && event.endTime
+                    ? ` • ${event.startTime}-${event.endTime}`
+                    : "";
+
                 return (
                   <div
                     key={event.date}
                     className="border-b border-slate-600 pb-2.5 mb-2.5 last:border-b-0 last:mb-0"
                   >
                     <p className="font-medium text-slate-100">
-                      {event.summary}
+                      {event.summary} {timeString}
                     </p>
                     <p className="text-slate-400">
                       {eventDate
@@ -169,6 +217,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                             day: "numeric",
                           })
                         : "Invalid Date"}
+                      {event.location ? ` • ${event.location}` : ""}
                     </p>
                   </div>
                 );
@@ -181,11 +230,11 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
           </div>
 
           <button
-            onClick={handleAddToCalendar}
+            onClick={handleDownloadIcs}
             disabled={preparedEvents.length === 0}
             className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Add to Google Calendar
+            Download Events (.ics)
           </button>
         </div>
       </div>
