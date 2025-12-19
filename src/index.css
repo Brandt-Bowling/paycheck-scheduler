@@ -89,3 +89,16 @@
     background: var(--color-slate-500, #64748b);
   }
 }
+
+@layer components {
+  /* Style for selected calendar days */
+  .calendar-day.selected {
+    background-color: var(--color-sky-500);
+    border-color: var(--color-sky-400);
+    color: var(--color-sky-100);
+  }
+  .calendar-day.selected:hover {
+    background-color: var(--color-sky-600);
+    border-color: var(--color-sky-500);
+  }
+}
