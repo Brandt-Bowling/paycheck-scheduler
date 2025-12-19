@@ -36,6 +36,11 @@ const EVENT_TEMPLATES: EventTemplate[] = [
     name: "Office Day",
     description: "Brandt's office day",
   },
+  {
+    id: "hannah-work",
+    name: "Hannah Work",
+    description: "Hannah's work shift",
+  },
 ];
 
 const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
@@ -115,6 +120,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
           location = commonLocation;
         } else if (template.id === "office-day") {
           // No specific time
+        } else if (template.id === "hannah-work") {
+          startTime = "15:00";
+          endTime = "23:30";
+          location = "5301 McAuley Dr, Ypsilanti, MI 48197";
         }
 
         return {
