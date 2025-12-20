@@ -18,12 +18,11 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   if (selectedDates.size === 0) return null;
 
   return (
-    <div className="w-full h-full flex justify-end items-end p-4 sm:p-6">
-      <div className="relative flex flex-col-reverse items-center gap-3 pointer-events-auto">
-        {/* Main FAB */}
-        <button
+    <div className="relative flex flex-col-reverse items-end gap-3 pointer-events-none">
+      {/* Main FAB */}
+      <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700 ${
+          className={`pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700 ${
             isExpanded ? "rotate-45 bg-slate-800 hover:bg-slate-700" : ""
           }`}
           aria-label={isExpanded ? "Close menu" : "Open menu"}
@@ -47,9 +46,9 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
         {/* Speed Dial FAB Menu */}
         <div
-          className={`flex flex-col items-end gap-3 transition-all duration-200 ease-in-out ${
+          className={`flex flex-col items-end gap-3 transition-all duration-200 ease-in-out pr-1 sm:pr-2 ${
             isExpanded
-              ? "opacity-100 translate-y-0"
+              ? "opacity-100 translate-y-0 pointer-events-auto"
               : "opacity-0 -translate-y-2 pointer-events-none"
           }`}
         >
@@ -78,7 +77,6 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
               <CalendarIcon />
             </button>
           </div>
-        </div>
       </div>
     </div>
   );
