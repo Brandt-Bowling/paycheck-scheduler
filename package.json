@@ -14,6 +14,9 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.10",
+    "@types/gapi": "^0.0.47",
+    "@types/gapi.calendar": "^3.0.11",
+    "@types/google.accounts": "^0.0.18",
     "@types/node": "^20.9.0",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",

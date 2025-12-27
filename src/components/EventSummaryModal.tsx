@@ -4,6 +4,7 @@ import {
   parseLocalDate,
   CalendarEvent,
 } from "../utils/dateHelpers";
+import { googleCalendarService } from "../utils/googleCalendar";
 
 interface EventSummaryModalProps {
   isOpen: boolean;
@@ -57,6 +58,9 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Mobile Tab State
   const [activeTab, setActiveTab] = useState<'configure' | 'review'>('configure');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [isInitializing, setIsInitializing] = useState(false);
 
   // Initialize targetedDates when modal opens
   useEffect(() => {
@@ -64,6 +68,14 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
       setTargetedDates(new Set(selectedDates));
       setQueuedEvents([]); // Reset queue on new open
       setActiveTab('configure'); // Reset tab
+      setSyncStatus('idle');
+
+      setIsInitializing(true);
+      // Pre-load Google scripts
+      googleCalendarService.loadGoogleScripts()
+        .then(() => googleCalendarService.initialize())
+        .catch(err => console.error("Failed to init Google Service", err))
+        .finally(() => setIsInitializing(false));
     }
   }, [isOpen, selectedDates]);
 
@@ -144,6 +156,25 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   const handleRemoveEvent = (index: number) => {
     setQueuedEvents((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddToGoogleCalendar = async () => {
+    if (queuedEvents.length === 0) return;
+
+    setIsSyncing(true);
+    setSyncStatus('idle');
+
+    try {
+      await googleCalendarService.addEvents(queuedEvents);
+      setSyncStatus('success');
+      // Optional: Clear queue or close modal?
+      // For now, let's keep them so the user knows what was added.
+    } catch (error) {
+      console.error("Sync failed", error);
+      setSyncStatus('error');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const handleDownloadIcs = () => {
@@ -351,13 +382,43 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                     )}
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-slate-700 shrink-0">
+                <div className="mt-4 pt-4 border-t border-slate-700 shrink-0 space-y-2">
+                    <button
+                        onClick={handleAddToGoogleCalendar}
+                        disabled={queuedEvents.length === 0 || isSyncing || isInitializing}
+                        className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20 flex items-center justify-center gap-2"
+                    >
+                        {isSyncing || isInitializing ? (
+                          <>
+                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            {isInitializing ? "Initializing..." : "Syncing..."}
+                          </>
+                        ) : (
+                          <>
+                            <span>Add to Google Calendar</span>
+                          </>
+                        )}
+                    </button>
+                    {syncStatus === 'success' && (
+                      <div className="text-green-400 text-sm text-center">
+                        Successfully added to calendar!
+                      </div>
+                    )}
+                    {syncStatus === 'error' && (
+                      <div className="text-red-400 text-sm text-center">
+                        Failed to add events. Check console.
+                      </div>
+                    )}
+
                     <button
                         onClick={handleDownloadIcs}
                         disabled={queuedEvents.length === 0}
-                        className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20"
+                        className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-4 rounded-lg text-sm transition-colors"
                     >
-                        Download .ics
+                        Download .ics instead
                     </button>
                 </div>
             </div>
