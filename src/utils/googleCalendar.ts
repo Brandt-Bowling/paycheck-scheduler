@@ -162,10 +162,21 @@ export class GoogleCalendarService {
             reject(new Error("Batch execution failed"));
             return;
         }
-        // resp is a map of request IDs to response objects.
-        // We can assume success if the map exists, or check individual responses.
-        // For simplicity, we resolve.
-        console.log('Batch response', resp);
+
+        const responses = Object.values(resp);
+        // Check for errors in the batch response
+        const errors = responses.filter((r: any) => r && r.error);
+
+        if (errors.length > 0) {
+            // Pick the first error to show
+            const firstError = errors[0] as any;
+            const msg = firstError.error.message || "Unknown error from Google Calendar";
+            console.error('Batch error response', resp);
+            reject(new Error(msg));
+            return;
+        }
+
+        console.log('Batch success response', resp);
         resolve(resp);
       });
     });

@@ -60,6 +60,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   const [activeTab, setActiveTab] = useState<'configure' | 'review'>('configure');
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
   // Initialize targetedDates when modal opens
@@ -69,6 +70,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
       setQueuedEvents([]); // Reset queue on new open
       setActiveTab('configure'); // Reset tab
       setSyncStatus('idle');
+      setErrorMessage(null);
 
       setIsInitializing(true);
       // Pre-load Google scripts
@@ -163,15 +165,17 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
     setIsSyncing(true);
     setSyncStatus('idle');
+    setErrorMessage(null);
 
     try {
       await googleCalendarService.addEvents(queuedEvents);
       setSyncStatus('success');
       // Optional: Clear queue or close modal?
       // For now, let's keep them so the user knows what was added.
-    } catch (error) {
+    } catch (error: any) {
       console.error("Sync failed", error);
       setSyncStatus('error');
+      setErrorMessage(error.message || "Failed to add events.");
     } finally {
       setIsSyncing(false);
     }
@@ -408,8 +412,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                       </div>
                     )}
                     {syncStatus === 'error' && (
-                      <div className="text-red-400 text-sm text-center">
-                        Failed to add events. Check console.
+                      <div className="text-red-400 text-sm text-center px-2">
+                        {errorMessage || "Failed to add events. Check console."}
                       </div>
                     )}
 
