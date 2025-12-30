@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import Calendar from "./components/Calendar";
 import EventSummaryModal from "./components/EventSummaryModal";
 import PaycheckModal from "./components/PaycheckModal";
+import Toast from "./components/Toast";
 import { parseLocalDate } from "./utils/dateHelpers";
 
 type NavKey = "calendar" | "paychecks" | "settings";
@@ -12,6 +13,19 @@ const App: React.FC = () => {
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<NavKey>("calendar");
+  const [toastMessage, setToastMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const handleShowToast = (message: string) => {
+    setToastMessage(message);
+    setIsToastVisible(true);
+  };
+
+  const handleEventSuccess = (message: string) => {
+    setIsEventModalOpen(false);
+    setSelectedDates(new Set());
+    handleShowToast(message);
+  };
 
   const handleDateSelect = (dateString: string): void => {
     setSelectedDates((prevDates) => {
@@ -110,7 +124,14 @@ const App: React.FC = () => {
       <EventSummaryModal
         isOpen={isEventModalOpen}
         onClose={() => setIsEventModalOpen(false)}
+        onSuccess={handleEventSuccess}
+        onError={handleShowToast}
         selectedDates={selectedDates}
+      />
+      <Toast
+        message={toastMessage}
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
       />
     </div>
   );
