@@ -10,8 +10,6 @@ interface EventSummaryModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDates: Set<string>;
-  onSuccess: (message: string) => void;
-  onError: (message: string) => void;
 }
 
 interface EventTemplate {
@@ -50,8 +48,6 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   isOpen,
   onClose,
   selectedDates,
-  onSuccess,
-  onError,
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = useState<string>("Brandt");
@@ -174,12 +170,12 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
     try {
       await googleCalendarService.addEvents(queuedEvents);
       setSyncStatus('success');
-      onSuccess("Successfully added to calendar!");
+      // Optional: Clear queue or close modal?
+      // For now, let's keep them so the user knows what was added.
     } catch (error: any) {
       console.error("Sync failed", error);
       setSyncStatus('error');
       setErrorMessage(error.message || "Failed to add events.");
-      onError("Failed to add events. Check console.");
     } finally {
       setIsSyncing(false);
     }
@@ -197,7 +193,6 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    onSuccess("ICS file downloaded");
   };
 
   if (!isOpen) return null;
