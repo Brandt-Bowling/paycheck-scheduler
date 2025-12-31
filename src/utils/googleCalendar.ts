@@ -1,5 +1,4 @@
 // Types for the Google Identity Services client
-// These are often available via @types/google.accounts but for simplicity in loading logic:
 declare global {
   interface Window {
     google: any;
@@ -20,6 +19,7 @@ export class GoogleCalendarService {
   private gapiInited = false;
   private gisInited = false;
   private config: GoogleCalendarConfig;
+  private pendingAuthRequest: { resolve: () => void, reject: (err: any) => void } | null = null;
 
   constructor(config: GoogleCalendarConfig) {
     this.config = config;
@@ -66,6 +66,7 @@ export class GoogleCalendarService {
 
   /**
    * Initializes the GAPI client and GIS token client.
+   * Attempts to restore session from localStorage refresh token.
    */
   public async initialize(): Promise<void> {
     if (this.gapiInited && this.gisInited) return;
@@ -84,35 +85,157 @@ export class GoogleCalendarService {
       });
     });
 
-    this.tokenClient = window.google.accounts.oauth2.initTokenClient({
+    // Initialize Code Client (Authorization Code Flow)
+    this.tokenClient = window.google.accounts.oauth2.initCodeClient({
       client_id: this.config.clientId,
       scope: SCOPES,
-      callback: () => {}, // Defined at request time
+      ux_mode: 'popup',
+      callback: (response: any) => this.handleAuthResponseWrapper(response),
     });
     this.gisInited = true;
+
+    // Try to restore session silently
+    await this.tryRestoreSession();
   }
 
   /**
-   * Requests an access token if needed.
+   * Handles the response from the popup (Auth Code Flow).
    */
-  private async requestAccessToken(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.tokenClient.callback = (resp: any) => {
-        if (resp.error) {
-          reject(resp);
-        }
-        resolve();
-      };
-
-      if (window.gapi.client.getToken() === null) {
-        // Prompt the user to select a Google Account and ask for consent to share their data
-        // when establishing a new session.
-        this.tokenClient.requestAccessToken({ prompt: 'consent' });
-      } else {
-        // Skip display of account chooser and consent dialog for an existing session.
-        this.tokenClient.requestAccessToken({ prompt: '' });
+  private async handleAuthResponse(response: any) {
+      if (response.error) {
+          console.error("Auth Error", response);
+          return;
       }
-    });
+      if (response.code) {
+          try {
+              const tokens = await this.exchangeCodeForTokens(response.code);
+              this.setSession(tokens);
+          } catch (err) {
+              console.error("Failed to exchange code", err);
+              throw err;
+          }
+      }
+  }
+
+  /**
+   * Calls the backend to exchange auth code for tokens.
+   */
+  private async exchangeCodeForTokens(code: string): Promise<any> {
+      const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+      });
+      if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Failed to exchange code');
+      }
+      return await res.json();
+  }
+
+  /**
+   * Calls the backend to refresh access token using refresh token.
+   */
+  private async refreshAccessToken(refreshToken: string): Promise<any> {
+      const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refreshToken })
+      });
+      if (!res.ok) {
+           if (res.status === 400 || res.status === 401) {
+               this.clearSession();
+           }
+           const err = await res.json();
+           throw new Error(err.error || 'Failed to refresh token');
+      }
+      return await res.json();
+  }
+
+  /**
+   * Sets the session in localStorage and gapi client.
+   */
+  private setSession(tokens: any) {
+      if (tokens.refresh_token) {
+          localStorage.setItem('google_refresh_token', tokens.refresh_token);
+      }
+      if (tokens.access_token) {
+          window.gapi.client.setToken({
+              access_token: tokens.access_token,
+              expires_in: tokens.expires_in || 3599
+          });
+      }
+  }
+
+  private clearSession() {
+      localStorage.removeItem('google_refresh_token');
+  }
+
+  /**
+   * Tries to restore the session using a stored refresh token.
+   */
+  private async tryRestoreSession(): Promise<void> {
+      const refreshToken = localStorage.getItem('google_refresh_token');
+      if (!refreshToken) return;
+
+      try {
+          console.log("Attempting to restore session...");
+          const tokens = await this.refreshAccessToken(refreshToken);
+          this.setSession(tokens);
+          console.log("Session restored.");
+      } catch (err) {
+          console.warn("Failed to restore session:", err);
+          this.clearSession();
+      }
+  }
+
+  /**
+   * Ensure we have a valid access token.
+   * If not, prompt the user.
+   */
+  private async ensureAccessToken(): Promise<void> {
+      const token = window.gapi.client.getToken();
+      const refreshToken = localStorage.getItem('google_refresh_token');
+
+      // If we have an existing token, assume validity for now.
+      if (token && token.access_token) {
+           return;
+      }
+
+      // If we have a refresh token, try to refresh silently first.
+      if (refreshToken) {
+          try {
+              const tokens = await this.refreshAccessToken(refreshToken);
+              this.setSession(tokens);
+              return;
+          } catch (e) {
+              console.warn("Silent refresh failed, proceeding to interactive login", e);
+          }
+      }
+
+      // If no valid session, trigger interactive login.
+      return new Promise((resolve, reject) => {
+          this.pendingAuthRequest = { resolve, reject };
+          this.tokenClient.requestCode();
+      });
+  }
+
+  /**
+   * Internal wrapper to route the callback response to the pending promise.
+   */
+  private async handleAuthResponseWrapper(response: any) {
+      try {
+          await this.handleAuthResponse(response);
+          if (this.pendingAuthRequest) {
+              this.pendingAuthRequest.resolve();
+              this.pendingAuthRequest = null;
+          }
+      } catch (e) {
+          if (this.pendingAuthRequest) {
+              this.pendingAuthRequest.reject(e);
+              this.pendingAuthRequest = null;
+          }
+      }
   }
 
   /**
@@ -123,7 +246,12 @@ export class GoogleCalendarService {
       throw new Error('Google Client not initialized');
     }
 
-    await this.requestAccessToken();
+    await this.ensureAccessToken();
+
+    // Check again if we have a token (in case ensureAccessToken failed silently or user closed popup)
+    if (!window.gapi.client.getToken()) {
+        throw new Error("User denied access or failed to authenticate");
+    }
 
     const batch = window.gapi.client.newBatch();
 
@@ -172,6 +300,11 @@ export class GoogleCalendarService {
             const firstError = errors[0] as any;
             const msg = firstError.error.message || "Unknown error from Google Calendar";
             console.error('Batch error response', resp);
+
+            if (firstError.error.code === 401) {
+                this.clearSession();
+            }
+
             reject(new Error(msg));
             return;
         }
