@@ -34,7 +34,7 @@ export default async (req, context) => {
     } else if (refresh_token) {
       // Refresh access token
       oauth2Client.setCredentials({ refresh_token });
-      const { tokens: newTokens } = await oauth2Client.refreshAccessToken();
+      const { credentials: newTokens } = await oauth2Client.refreshAccessToken();
       tokens = newTokens;
     } else {
       return new Response(JSON.stringify({ error: 'Missing code or refresh_token' }), {

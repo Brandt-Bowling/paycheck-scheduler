@@ -19,6 +19,7 @@ export class GoogleCalendarService {
   private gapiInited = false;
   private gisInited = false;
   private config: GoogleCalendarConfig;
+  private pendingAuthRequest: { resolve: () => void, reject: (err: any) => void } | null = null;
 
   constructor(config: GoogleCalendarConfig) {
     this.config = config;
@@ -111,7 +112,6 @@ export class GoogleCalendarService {
               this.setSession(tokens);
           } catch (err) {
               console.error("Failed to exchange code", err);
-              // If exchange fails, we might need to prompt user again or just show error
               throw err;
           }
       }
@@ -143,7 +143,6 @@ export class GoogleCalendarService {
           body: JSON.stringify({ refresh_token: refreshToken })
       });
       if (!res.ok) {
-           // If 400/401, refresh token might be invalid
            if (res.status === 400 || res.status === 401) {
                this.clearSession();
            }
@@ -170,7 +169,6 @@ export class GoogleCalendarService {
 
   private clearSession() {
       localStorage.removeItem('google_refresh_token');
-      // window.gapi.client.setToken(null); // Not always necessary, but good practice
   }
 
   /**
@@ -196,57 +194,34 @@ export class GoogleCalendarService {
    * If not, prompt the user.
    */
   private async ensureAccessToken(): Promise<void> {
-      // Check if we have a valid token in gapi
       const token = window.gapi.client.getToken();
-
-      // We assume if token exists, it's valid enough for now.
-      // Ideally we check expiration, but gapi handles some of this.
-      // However, if it's been > 1 hour since load, it might be expired.
-      // We can try to refresh it if we have a refresh token.
-
       const refreshToken = localStorage.getItem('google_refresh_token');
 
+      // If we have an existing token, assume validity for now.
       if (token && token.access_token) {
-           // We might want to proactively refresh if we can, but gapi doesn't expose expiry time easily in the object always?
-           // Actually, let's just use it. If it fails with 401, we should catch that and retry.
            return;
       }
 
+      // If we have a refresh token, try to refresh silently first.
       if (refreshToken) {
           try {
               const tokens = await this.refreshAccessToken(refreshToken);
               this.setSession(tokens);
               return;
           } catch (e) {
-              console.warn("Silent refresh failed", e);
-              // Fall through to interactive login
+              console.warn("Silent refresh failed, proceeding to interactive login", e);
           }
       }
 
-      // Interactive login
+      // If no valid session, trigger interactive login.
       return new Promise((resolve, reject) => {
-          // We override the callback for this specific request to resolve the promise
-          // But initCodeClient sets a global callback.
-          // Actually, initCodeClient doesn't return a promise like requestAccessToken.
-          // We need to wrap it.
-
-          // Re-initialize callback to handle this specific flow request?
-          // No, initCodeClient is a one-time init.
-          // We can't change the callback easily.
-          // Instead, we should probably design `requestAuth` to wait for the callback.
-
-          // Workaround: We'll set a temporary listener or just rely on the global state change?
-          // A cleaner way is to store the resolve/reject functions in a pending queue.
-
           this.pendingAuthRequest = { resolve, reject };
           this.tokenClient.requestCode();
       });
   }
 
-  private pendingAuthRequest: { resolve: () => void, reject: (err: any) => void } | null = null;
-
   /**
-   * Internal override to handle callback routing
+   * Internal wrapper to route the callback response to the pending promise.
    */
   private async handleAuthResponseWrapper(response: any) {
       try {
@@ -326,9 +301,6 @@ export class GoogleCalendarService {
             const msg = firstError.error.message || "Unknown error from Google Calendar";
             console.error('Batch error response', resp);
 
-            // If error is 401, we might want to trigger a refresh and retry?
-            // implementing retry logic here is complex.
-            // For now, fail fast, but maybe clear session if 401.
             if (firstError.error.code === 401) {
                 this.clearSession();
             }
