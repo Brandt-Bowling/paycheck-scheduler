@@ -15,9 +15,17 @@ export default async (req, context) => {
     // For popup flow, redirect_uri is usually 'postmessage'
     const redirectUri = 'postmessage';
 
-    if (!clientId || !clientSecret) {
-      console.error('Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET env vars');
-      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+    if (!clientId) {
+      console.error('Configuration Error: GOOGLE_CLIENT_ID is missing on the server');
+      return new Response(JSON.stringify({ error: 'Configuration Error: GOOGLE_CLIENT_ID is missing on the server' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!clientSecret) {
+      console.error('Configuration Error: GOOGLE_CLIENT_SECRET is missing on the server');
+      return new Response(JSON.stringify({ error: 'Configuration Error: GOOGLE_CLIENT_SECRET is missing on the server' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
