@@ -22,6 +22,7 @@ export interface CalendarEvent {
   startTime?: string; // HH:MM
   endTime?: string; // HH:MM
   location?: string;
+  colorId?: string;
 }
 
 export const formatDateToYYYYMMDD = (date: Date | null | undefined): string | null => {
