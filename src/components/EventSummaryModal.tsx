@@ -9,6 +9,8 @@ import { googleCalendarService } from "../utils/googleCalendar";
 interface EventSummaryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: (message: string) => void;
+  onError: (message: string) => void;
   selectedDates: Set<string>;
 }
 
@@ -67,6 +69,8 @@ const EVENT_TEMPLATES: EventTemplate[] = [
 const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   isOpen,
   onClose,
+  onSuccess,
+  onError,
   selectedDates,
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
@@ -202,12 +206,13 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
     try {
       await googleCalendarService.addEvents(queuedEvents);
       setSyncStatus('success');
-      // Optional: Clear queue or close modal?
-      // For now, let's keep them so the user knows what was added.
+      onSuccess("Successfully added to calendar!");
     } catch (error: any) {
       console.error("Sync failed", error);
       setSyncStatus('error');
-      setErrorMessage(error.message || "Failed to add events.");
+      const msg = error.message || "Failed to add events.";
+      setErrorMessage(msg);
+      onError(msg);
     } finally {
       setIsSyncing(false);
     }
