@@ -19,6 +19,26 @@ interface EventTemplate {
   personOptions?: string[];
 }
 
+interface EventColor {
+  id: string;
+  name: string;
+  hex: string;
+}
+
+const EVENT_COLORS: EventColor[] = [
+  { id: "1", name: "Lavender", hex: "#7986cb" },
+  { id: "2", name: "Sage", hex: "#33b679" },
+  { id: "3", name: "Grape", hex: "#8e24aa" },
+  { id: "4", name: "Flamingo", hex: "#e67c73" },
+  { id: "5", name: "Banana", hex: "#f6bf26" },
+  { id: "6", name: "Tangerine", hex: "#f4511e" },
+  { id: "7", name: "Peacock", hex: "#039be5" },
+  { id: "8", name: "Graphite", hex: "#616161" },
+  { id: "9", name: "Blueberry", hex: "#3f51b5" },
+  { id: "10", name: "Basil", hex: "#0b8043" },
+  { id: "11", name: "Tomato", hex: "#d50000" },
+];
+
 const EVENT_TEMPLATES: EventTemplate[] = [
   {
     id: "school-dropoff",
@@ -51,6 +71,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = useState<string>("Brandt");
+  const [selectedColor, setSelectedColor] = useState<string>("");
 
   // State for the "Builder" flow
   const [targetedDates, setTargetedDates] = useState<Set<string>>(new Set());
@@ -80,6 +101,19 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         .finally(() => setIsInitializing(false));
     }
   }, [isOpen, selectedDates]);
+
+  // Update default color when template changes
+  useEffect(() => {
+    if (selectedTemplate.includes("school")) {
+      setSelectedColor("9"); // Blueberry
+    } else if (selectedTemplate === "office-day") {
+      setSelectedColor("11"); // Tomato
+    } else if (selectedTemplate === "hannah-work") {
+      setSelectedColor("4"); // Flamingo
+    } else {
+      setSelectedColor(""); // Default
+    }
+  }, [selectedTemplate]);
 
   const handleToggleTargetDate = (date: string) => {
     setTargetedDates((prev) => {
@@ -147,13 +181,11 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
           startTime,
           endTime,
           location,
+          colorId: selectedColor || undefined,
         };
       });
 
     setQueuedEvents((prev) => [...prev, ...newEvents]);
-    // Optionally visualize success or switch tabs?
-    // Staying on configure is better for rapid entry, but let's give a visual cue if possible.
-    // For now, the user can see the Review tab count update.
   };
 
   const handleRemoveEvent = (index: number) => {
@@ -303,6 +335,24 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                     </div>
                   </div>
                 )}
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Color
+                  </label>
+                  <select
+                    value={selectedColor}
+                    onChange={(e) => setSelectedColor(e.target.value)}
+                    className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="">Default</option>
+                    {EVENT_COLORS.map((color) => (
+                      <option key={color.id} value={color.id}>
+                        {color.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Date Selection */}
@@ -362,9 +412,17 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                     ) : (
                         queuedEvents.map((event, idx) => {
                             const date = parseLocalDate(event.date);
+                            const eventColor = EVENT_COLORS.find(c => c.id === event.colorId);
+
                             return (
-                                <div key={idx} className="bg-slate-800 border border-slate-700 p-3 rounded-lg flex justify-between items-start group">
-                                    <div>
+                                <div key={idx} className="bg-slate-800 border border-slate-700 p-3 rounded-lg flex justify-between items-start group relative overflow-hidden">
+                                    {eventColor && (
+                                      <div
+                                        className="absolute left-0 top-0 bottom-0 w-1.5"
+                                        style={{ backgroundColor: eventColor.hex }}
+                                      ></div>
+                                    )}
+                                    <div className={eventColor ? "pl-2" : ""}>
                                         <div className="font-medium text-slate-200 text-sm">
                                             {event.summary}
                                         </div>
@@ -372,6 +430,12 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                                             {date ? date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : event.date}
                                             {event.startTime && ` • ${event.startTime}-${event.endTime}`}
                                         </div>
+                                        {eventColor && (
+                                          <div className="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
+                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: eventColor.hex }}></div>
+                                            {eventColor.name}
+                                          </div>
+                                        )}
                                     </div>
                                     <button
                                         onClick={() => handleRemoveEvent(idx)}

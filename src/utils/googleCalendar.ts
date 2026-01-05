@@ -282,6 +282,7 @@ export class GoogleCalendarService {
         summary: event.summary,
         description: event.description,
         location: event.location,
+        colorId: event.colorId,
         start: {},
         end: {}
       };
