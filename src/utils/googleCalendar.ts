@@ -26,6 +26,18 @@ export class GoogleCalendarService {
   }
 
   /**
+   * Fetches the Client ID from the backend.
+   */
+  private async fetchClientId(): Promise<string> {
+    const res = await fetch('/api/auth');
+    if (!res.ok) {
+        throw new Error('Failed to fetch Client ID');
+    }
+    const data = await res.json();
+    return data.clientId;
+  }
+
+  /**
    * Loads the necessary Google scripts dynamically.
    */
   public loadGoogleScripts(): Promise<void> {
@@ -70,6 +82,16 @@ export class GoogleCalendarService {
    */
   public async initialize(): Promise<void> {
     if (this.gapiInited && this.gisInited) return;
+
+    // Fetch Client ID if not present
+    if (!this.config.clientId) {
+        try {
+            this.config.clientId = await this.fetchClientId();
+        } catch (err) {
+            console.error('Failed to initialize Google Service: Missing Client ID', err);
+            throw err;
+        }
+    }
 
     await new Promise<void>((resolve, reject) => {
       window.gapi.load('client', async () => {
@@ -328,6 +350,6 @@ export class GoogleCalendarService {
 }
 
 export const googleCalendarService = new GoogleCalendarService({
-    clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    clientId: '', // Will be fetched from backend
     calendarId: import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary'
 });

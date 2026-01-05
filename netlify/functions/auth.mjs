@@ -1,7 +1,22 @@
 import { OAuth2Client } from 'google-auth-library';
 
 export default async (req, context) => {
-  // Only allow POST requests
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+
+  if (req.method === 'GET') {
+    if (!clientId) {
+        return new Response(JSON.stringify({ error: 'Configuration Error: GOOGLE_CLIENT_ID is missing on the server' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+    return new Response(JSON.stringify({ clientId }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Only allow POST requests for other operations
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
   }
@@ -10,7 +25,6 @@ export default async (req, context) => {
     const body = await req.json();
     const { code, refresh_token } = body;
 
-    const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     // For popup flow, redirect_uri is usually 'postmessage'
     const redirectUri = 'postmessage';
