@@ -20,9 +20,47 @@ export class GoogleCalendarService {
   private gisInited = false;
   private config: GoogleCalendarConfig;
   private pendingAuthRequest: { resolve: () => void, reject: (err: any) => void } | null = null;
+  private listeners: ((isAuth: boolean) => void)[] = [];
 
   constructor(config: GoogleCalendarConfig) {
     this.config = config;
+  }
+
+  /**
+   * Subscribe to authentication state changes.
+   * Returns a cleanup function.
+   */
+  public subscribe(callback: (isAuth: boolean) => void): () => void {
+    this.listeners.push(callback);
+    // Immediately fire with current state
+    callback(this.isAuthenticated());
+    return () => {
+      this.listeners = this.listeners.filter(cb => cb !== callback);
+    };
+  }
+
+  private notifyListeners() {
+    const isAuth = this.isAuthenticated();
+    this.listeners.forEach(cb => cb(isAuth));
+  }
+
+  /**
+   * Checks if the user is currently authenticated (has a refresh token).
+   */
+  public isAuthenticated(): boolean {
+    return !!localStorage.getItem('google_refresh_token');
+  }
+
+  /**
+   * Triggers the interactive authentication flow.
+   */
+  public authenticate(): Promise<void> {
+    if (!this.tokenClient) {
+       return Promise.reject(new Error("Google Client not initialized"));
+    }
+    // Reuse ensureAccessToken to handle logic and pending requests safely
+    // Since isAuthenticated() is false when this is called, ensureAccessToken will trigger the interactive flow
+    return this.ensureAccessToken();
   }
 
   /**
@@ -187,10 +225,12 @@ export class GoogleCalendarService {
               expires_in: tokens.expires_in || 3599
           });
       }
+      this.notifyListeners();
   }
 
   private clearSession() {
       localStorage.removeItem('google_refresh_token');
+      this.notifyListeners();
   }
 
   /**
