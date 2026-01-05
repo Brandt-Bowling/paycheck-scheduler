@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD } from "../utils/dateHelpers";
 import ChevronLeftIcon from "./icons/ChevronLeftIcon";
 import ChevronRightIcon from "./icons/ChevronRightIcon";
+import AuthStatus from "./AuthStatus";
 
 interface CalendarProps {
   selectedDates: Set<string>;
@@ -62,13 +63,16 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
   return (
     <div className="flex-1 flex flex-col pt-safe-top px-4">
       {/* Header */}
-      <header className="text-center pt-8 pb-4">
-        <h1 className="text-2xl font-medium text-slate-100">
-          Quick Event Adder
-        </h1>
-        <p className="text-sm text-slate-400/80 mt-1">
-          Select dates to add a "Work" event
-        </p>
+      <header className="flex justify-between items-start pt-8 pb-4 gap-4">
+        <div>
+          <h1 className="text-2xl font-medium text-slate-100 text-left">
+            Quick Event Adder
+          </h1>
+          <p className="text-sm text-slate-400/80 mt-1 text-left">
+            Select dates to add a "Work" event
+          </p>
+        </div>
+        <AuthStatus />
       </header>
 
       {/* Month Navigation */}
