@@ -4,11 +4,13 @@ import ChevronLeftIcon from "./icons/ChevronLeftIcon";
 import ChevronRightIcon from "./icons/ChevronRightIcon";
 import SettingsIcon from "./icons/SettingsIcon";
 import AuthStatus from "./AuthStatus";
+import { AppMode } from "../App";
 
 interface CalendarProps {
   selectedDates: Set<string>;
   onDateSelect: (dateString: string) => void;
   onOpenSettings: () => void;
+  appMode: AppMode;
 }
 
 interface CalendarDayItem {
@@ -17,7 +19,7 @@ interface CalendarDayItem {
   dateString?: string;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings }) => {
+const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings, appMode }) => {
   const [currentDate, setCurrentDate] = useState(() => {
     const d = new Date();
     d.setDate(1); // Start with the first day of the current month
@@ -71,7 +73,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
             Quick Event Adder
           </h1>
           <p className="text-sm text-slate-400/80 mt-1 text-left">
-            Select dates to add a "Work" event
+            {appMode === "work_only" ? 'Select dates to add a "Work" event' : "Select dates to add events"}
           </p>
         </div>
         <div className="flex items-center gap-2">

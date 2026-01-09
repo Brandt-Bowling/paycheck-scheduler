@@ -1,4 +1,4 @@
-import FloatingToolbar from "./components/FloatingToolbar";
+import FloatingActionButton from "./components/FloatingActionButton";
 import { useState, useMemo, useEffect } from "react";
 import Calendar from "./components/Calendar";
 import EventSummaryModal from "./components/EventSummaryModal";
@@ -89,10 +89,11 @@ const App: React.FC = () => {
             selectedDates={selectedDates}
             onDateSelect={handleDateSelect}
             onOpenSettings={() => setSelectedTab('settings')}
+            appMode={appMode}
           />
         </div>
         <div className="row-start-1 col-start-1 pointer-events-none grid items-end justify-end p-4 sm:p-6 z-10">
-          <FloatingToolbar
+          <FloatingActionButton
             onOpenEventModal={handleOpenEventModal}
             onOpenPayModal={() => setIsPayModalOpen(true)}
             selectedDates={selectedDates}
@@ -134,20 +135,22 @@ const App: React.FC = () => {
       <main className="w-full px-3 pt-6 sm:pt-10">
         <div className="mx-auto max-w-md">
           <div className="bg-slate-800 rounded-3xl shadow-xl p-5 sm:p-8">
-            <header className="text-center mb-8 relative">
-              <button
-                onClick={() => setSelectedTab('calendar')}
-                className="absolute left-0 top-1 text-slate-400 hover:text-slate-200"
-              >
-                &larr; Back
-              </button>
+            <header className="text-center mb-8 relative flex items-center justify-center">
               <h1 className="text-3xl sm:text-4xl font-medium text-slate-100">
                 Settings
               </h1>
-              <p className="text-sm text-slate-400 mt-2">
-                Manage application preferences.
-              </p>
+              <button
+                onClick={() => setSelectedTab('calendar')}
+                className="absolute right-0 top-1 text-slate-400 hover:text-slate-200 p-2"
+                aria-label="Close settings"
+              >
+                <span className="text-2xl leading-none">&times;</span>
+              </button>
+
             </header>
+            <p className="text-sm text-slate-400 -mt-6 mb-8 text-center">
+                Manage application preferences.
+            </p>
 
             <div className="space-y-6">
               <div>

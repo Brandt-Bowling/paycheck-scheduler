@@ -3,14 +3,14 @@ import CalendarIcon from "./icons/CalendarIcon";
 import PayIcon from "./icons/PayIcon";
 import { AppMode } from "../App";
 
-interface FloatingToolbarProps {
+interface FloatingActionButtonProps {
   onOpenEventModal: () => void;
   onOpenPayModal: () => void;
   selectedDates: Set<string>;
   appMode: AppMode;
 }
 
-const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
+const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   onOpenEventModal,
   onOpenPayModal,
   selectedDates,
@@ -99,4 +99,4 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   );
 };
 
-export default FloatingToolbar;
+export default FloatingActionButton;
