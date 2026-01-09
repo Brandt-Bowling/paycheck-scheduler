@@ -2,11 +2,13 @@ import React, { useState, useMemo } from "react";
 import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD } from "../utils/dateHelpers";
 import ChevronLeftIcon from "./icons/ChevronLeftIcon";
 import ChevronRightIcon from "./icons/ChevronRightIcon";
+import SettingsIcon from "./icons/SettingsIcon";
 import AuthStatus from "./AuthStatus";
 
 interface CalendarProps {
   selectedDates: Set<string>;
   onDateSelect: (dateString: string) => void;
+  onOpenSettings: () => void;
 }
 
 interface CalendarDayItem {
@@ -15,7 +17,7 @@ interface CalendarDayItem {
   dateString?: string;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
+const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings }) => {
   const [currentDate, setCurrentDate] = useState(() => {
     const d = new Date();
     d.setDate(1); // Start with the first day of the current month
@@ -72,7 +74,16 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
             Select dates to add a "Work" event
           </p>
         </div>
-        <AuthStatus />
+        <div className="flex items-center gap-2">
+            <AuthStatus />
+            <button
+                onClick={onOpenSettings}
+                className="p-2 text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                aria-label="Settings"
+            >
+                <SettingsIcon />
+            </button>
+        </div>
       </header>
 
       {/* Month Navigation */}
