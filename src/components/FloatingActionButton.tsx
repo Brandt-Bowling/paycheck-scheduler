@@ -1,21 +1,36 @@
 import React, { useState } from "react";
-import CalendarIcon from "./icons/CalendarIcon";
-import PayIcon from "./icons/PayIcon";
+import { AppMode } from "../App";
 
-interface FloatingToolbarProps {
+interface FloatingActionButtonProps {
   onOpenEventModal: () => void;
   onOpenPayModal: () => void;
   selectedDates: Set<string>;
+  appMode: AppMode;
 }
 
-const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
+const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   onOpenEventModal,
   onOpenPayModal,
   selectedDates,
+  appMode,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (selectedDates.size === 0) return null;
+
+  if (appMode === "work_only") {
+    return (
+        <div className="relative flex flex-col-reverse items-end gap-3 pointer-events-none">
+          <button
+              onClick={onOpenEventModal}
+              className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700"
+              aria-label="Add Work Event"
+          >
+              <span className="material-symbols-outlined !text-[28px]">calendar_month</span>
+          </button>
+        </div>
+    );
+  }
 
   return (
     <div className="relative flex flex-col-reverse items-end gap-3 pointer-events-none">
@@ -28,20 +43,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
           aria-label={isExpanded ? "Close menu" : "Open menu"}
           aria-expanded={isExpanded}
         >
-          <svg
-            className="w-6 h-6 sm:w-7 sm:h-7"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
+          <span className="material-symbols-outlined !text-[32px]">add</span>
         </button>
 
         {/* Speed Dial FAB Menu */}
@@ -62,7 +64,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
               className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
               aria-label="Pay Estimator"
             >
-              <PayIcon />
+              <span className="material-symbols-outlined">attach_money</span>
             </button>
           </div>
           <div className="flex items-center gap-3">
@@ -74,7 +76,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
               className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
               aria-label="Templates"
             >
-              <CalendarIcon />
+              <span className="material-symbols-outlined">calendar_month</span>
             </button>
           </div>
       </div>
@@ -82,4 +84,4 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   );
 };
 
-export default FloatingToolbar;
+export default FloatingActionButton;

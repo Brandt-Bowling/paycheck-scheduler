@@ -19,7 +19,7 @@ const AuthStatus: React.FC = () => {
         }`}
       />
       <span className={`text-xs font-medium ${isAuthenticated ? "text-slate-200" : "text-slate-400"}`}>
-        {isAuthenticated ? "Google Calendar Ready" : "Not Connected"}
+        {isAuthenticated ? "Connected" : "Not Connected"}
       </span>
     </div>
   );

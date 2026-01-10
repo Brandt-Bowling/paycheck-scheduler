@@ -5,6 +5,7 @@ import {
   CalendarEvent,
 } from "../utils/dateHelpers";
 import { googleCalendarService } from "../utils/googleCalendar";
+import { AppMode } from "../App";
 
 interface EventSummaryModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface EventSummaryModalProps {
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
   selectedDates: Set<string>;
+  appMode: AppMode;
 }
 
 interface EventTemplate {
@@ -72,6 +74,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   onSuccess,
   onError,
   selectedDates,
+  appMode,
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = useState<string>("Brandt");
@@ -97,6 +100,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
       setSyncStatus('idle');
       setErrorMessage(null);
 
+      if (appMode === "work_only") {
+        setSelectedTemplate("hannah-work");
+      }
+
       setIsInitializing(true);
       // Pre-load Google scripts
       googleCalendarService.loadGoogleScripts()
@@ -104,7 +111,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         .catch(err => console.error("Failed to init Google Service", err))
         .finally(() => setIsInitializing(false));
     }
-  }, [isOpen, selectedDates]);
+  }, [isOpen, selectedDates, appMode]);
 
   // Update default color when template changes
   useEffect(() => {
@@ -257,10 +264,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         <div className="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-4xl relative flex flex-col max-h-[90vh] overflow-hidden">
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 text-slate-400 hover:text-slate-200 p-1 leading-none text-2xl z-10"
+            className="absolute top-3 right-3 text-slate-400 hover:text-slate-200 p-1 z-10 flex items-center justify-center"
             aria-label="Close"
           >
-            &times;
+            <span className="material-symbols-outlined">close</span>
           </button>
 
           <h2 className="text-2xl font-medium text-slate-100 mb-5 shrink-0">
@@ -301,22 +308,30 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                   1. Configure Event
                 </h3>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
-                    Type
-                  </label>
-                  <select
-                    value={selectedTemplate}
-                    onChange={(e) => setSelectedTemplate(e.target.value)}
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
-                  >
-                    {EVENT_TEMPLATES.map((template) => (
-                      <option key={template.id} value={template.id}>
-                        {template.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {appMode !== "work_only" && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                      Type
+                    </label>
+                    <select
+                      value={selectedTemplate}
+                      onChange={(e) => setSelectedTemplate(e.target.value)}
+                      className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
+                    >
+                      {EVENT_TEMPLATES.map((template) => (
+                        <option key={template.id} value={template.id}>
+                          {template.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {appMode === "work_only" && (
+                  <div className="text-slate-400 text-sm italic">
+                    Template locked to "Hannah Work"
+                  </div>
+                )}
 
                 {EVENT_TEMPLATES.find((t) => t.id === selectedTemplate)?.personOptions && (
                   <div>
@@ -444,10 +459,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                                     </div>
                                     <button
                                         onClick={() => handleRemoveEvent(idx)}
-                                        className="text-slate-500 hover:text-red-400 p-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="text-slate-500 hover:text-red-400 p-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                                         aria-label="Remove event"
                                     >
-                                        &times;
+                                        <span className="material-symbols-outlined !text-[18px]">close</span>
                                     </button>
                                 </div>
                             );
