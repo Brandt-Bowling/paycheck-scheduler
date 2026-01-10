@@ -70,7 +70,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
       <header className="flex justify-between items-start pt-8 pb-4 gap-4">
         <div>
           <h1 className="text-2xl font-medium text-slate-100 text-left">
-            Quick Event Adder
+            You go work?
           </h1>
           <p className="text-sm text-slate-400/80 mt-1 text-left">
             {appMode === "work_only" ? 'Select dates to add a "Work" event' : "Select dates to add events"}
@@ -80,10 +80,10 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
             <AuthStatus />
             <button
                 onClick={onOpenSettings}
-                className="p-2 text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                className="p-1.5 text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
                 aria-label="Settings"
             >
-                <SettingsIcon />
+                <SettingsIcon className="w-4 h-4" />
             </button>
         </div>
       </header>
