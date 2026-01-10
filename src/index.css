@@ -42,7 +42,7 @@
      For now, focusing on colors as that was the main part of our previous config.
      Example for fonts (if needed):
   */
-  --font-sans: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-sans: "Google Sans", "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 /* Import Tailwind's layers/functionality.
