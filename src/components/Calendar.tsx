@@ -1,8 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD } from "../utils/dateHelpers";
-import ChevronLeftIcon from "./icons/ChevronLeftIcon";
-import ChevronRightIcon from "./icons/ChevronRightIcon";
-import SettingsIcon from "./icons/SettingsIcon";
 import AuthStatus from "./AuthStatus";
 import { AppMode } from "../App";
 
@@ -83,7 +80,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
                 className="p-1.5 text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
                 aria-label="Settings"
             >
-                <SettingsIcon className="w-4 h-4" />
+                <span className="material-symbols-outlined text-base">settings</span>
             </button>
         </div>
       </header>
@@ -95,7 +92,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
           aria-label="Previous month"
           className="p-2.5 rounded-full hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
         >
-          <ChevronLeftIcon />
+          <span className="material-symbols-outlined text-2xl">chevron_left</span>
         </button>
         <h2 className="text-xl sm:text-2xl font-medium text-slate-200">
           {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
@@ -105,7 +102,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
           aria-label="Next month"
           className="p-2.5 rounded-full hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
         >
-          <ChevronRightIcon />
+          <span className="material-symbols-outlined text-2xl">chevron_right</span>
         </button>
       </div>
 

@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import CalendarIcon from "./icons/CalendarIcon";
-import PayIcon from "./icons/PayIcon";
 import { AppMode } from "../App";
 
 interface FloatingActionButtonProps {
@@ -28,7 +26,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
               className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700"
               aria-label="Add Work Event"
           >
-              <CalendarIcon />
+              <span className="material-symbols-outlined text-xl">calendar_today</span>
           </button>
         </div>
     );
@@ -45,20 +43,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
           aria-label={isExpanded ? "Close menu" : "Open menu"}
           aria-expanded={isExpanded}
         >
-          <svg
-            className="w-6 h-6 sm:w-7 sm:h-7"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
+          <span className="material-symbols-outlined text-2xl sm:text-3xl">add</span>
         </button>
 
         {/* Speed Dial FAB Menu */}
@@ -79,7 +64,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
               className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
               aria-label="Pay Estimator"
             >
-              <PayIcon />
+              <span className="material-symbols-outlined text-xl">attach_money</span>
             </button>
           </div>
           <div className="flex items-center gap-3">
@@ -91,7 +76,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
               className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
               aria-label="Templates"
             >
-              <CalendarIcon />
+              <span className="material-symbols-outlined text-xl">calendar_today</span>
             </button>
           </div>
       </div>

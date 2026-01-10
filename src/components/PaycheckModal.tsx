@@ -1,6 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { formatDateToYYYYMMDD, parseLocalDate } from "../utils/dateHelpers";
-import CloseIcon from "./icons/CloseIcon";
 
 interface PaycheckModalProps {
   isOpen: boolean;
@@ -107,7 +106,7 @@ const PaycheckModal: React.FC<PaycheckModalProps> = ({ isOpen, onClose, selected
             className="p-2 rounded-full text-slate-400 hover:bg-slate-700 hover:text-slate-200 transition-colors"
             aria-label="Close paycheck settings"
           >
-            <CloseIcon />
+            <span className="material-symbols-outlined text-2xl">close</span>
           </button>
         </div>
         {/* Bottom Sheet Content */}
