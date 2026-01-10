@@ -2,11 +2,15 @@ import React, { useState, useMemo } from "react";
 import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD } from "../utils/dateHelpers";
 import ChevronLeftIcon from "./icons/ChevronLeftIcon";
 import ChevronRightIcon from "./icons/ChevronRightIcon";
+import SettingsIcon from "./icons/SettingsIcon";
 import AuthStatus from "./AuthStatus";
+import { AppMode } from "../App";
 
 interface CalendarProps {
   selectedDates: Set<string>;
   onDateSelect: (dateString: string) => void;
+  onOpenSettings: () => void;
+  appMode: AppMode;
 }
 
 interface CalendarDayItem {
@@ -15,7 +19,7 @@ interface CalendarDayItem {
   dateString?: string;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
+const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings, appMode }) => {
   const [currentDate, setCurrentDate] = useState(() => {
     const d = new Date();
     d.setDate(1); // Start with the first day of the current month
@@ -66,13 +70,22 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect }) => {
       <header className="flex justify-between items-start pt-8 pb-4 gap-4">
         <div>
           <h1 className="text-2xl font-medium text-slate-100 text-left">
-            Quick Event Adder
+            You go work?
           </h1>
           <p className="text-sm text-slate-400/80 mt-1 text-left">
-            Select dates to add a "Work" event
+            {appMode === "work_only" ? 'Select dates to add a "Work" event' : "Select dates to add events"}
           </p>
         </div>
-        <AuthStatus />
+        <div className="flex items-center gap-2">
+            <AuthStatus />
+            <button
+                onClick={onOpenSettings}
+                className="p-1.5 text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                aria-label="Settings"
+            >
+                <SettingsIcon className="w-4 h-4" />
+            </button>
+        </div>
       </header>
 
       {/* Month Navigation */}
