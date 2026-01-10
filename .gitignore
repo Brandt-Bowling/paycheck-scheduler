@@ -136,3 +136,8 @@ dist
 .pnp.*
 
 .vite/
+
+# Verification and Test Artifacts
+/error.png
+/verification_*.png
+/screenshot_*.png
