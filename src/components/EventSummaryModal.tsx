@@ -63,7 +63,7 @@ const EVENT_TEMPLATES: EventTemplate[] = [
   },
   {
     id: "hannah-work",
-    name: "Hannah Work",
+    name: "Work",
     description: "Hannah's work shift",
   },
 ];
@@ -79,6 +79,11 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = useState<string>("Brandt");
   const [selectedColor, setSelectedColor] = useState<string>("");
+
+  // Work template specific state
+  const [workStartTime, setWorkStartTime] = useState<string>("15:00");
+  const [workEndTime, setWorkEndTime] = useState<string>("23:30");
+  const [isWorkIncentive, setIsWorkIncentive] = useState<boolean>(false);
 
   // State for the "Builder" flow
   const [targetedDates, setTargetedDates] = useState<Set<string>>(new Set());
@@ -103,6 +108,11 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
       if (appMode === "work_only") {
         setSelectedTemplate("hannah-work");
       }
+
+      // Reset work specific state
+      setWorkStartTime("15:00");
+      setWorkEndTime("23:30");
+      setIsWorkIncentive(false);
 
       setIsInitializing(true);
       // Pre-load Google scripts
@@ -180,13 +190,23 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         } else if (template.id === "office-day") {
           // No specific time
         } else if (template.id === "hannah-work") {
-          startTime = "15:00";
-          endTime = "23:30";
+          startTime = workStartTime;
+          endTime = workEndTime;
           location = "5301 McAuley Dr, Ypsilanti, MI 48197";
         }
 
+        let summary = `${template.name} ${person}`;
+        if (template.id === "hannah-work" && isWorkIncentive && startTime && endTime) {
+           const formatTime = (t: string) => {
+             const [h, m] = t.split(':').map(Number);
+             const disp = h > 12 ? h - 12 : (h === 0 || h === 12 ? 12 : h);
+             return m > 0 ? `${disp}:${m.toString().padStart(2, '0')}` : `${disp}`;
+           };
+           summary = `Work (Incentive ${formatTime(startTime)}-${formatTime(endTime)})`;
+        }
+
         return {
-          summary: `${template.name} ${person}`,
+          summary: summary.trim(),
           description: template.description,
           date: dateStr,
           startTime,
@@ -329,7 +349,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
                 {appMode === "work_only" && (
                   <div className="text-slate-400 text-sm italic">
-                    Template locked to "Hannah Work"
+                    Template locked to "Work"
                   </div>
                 )}
 
@@ -352,6 +372,44 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                           {person}
                         </button>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Work Template Specifics */}
+                {selectedTemplate === "hannah-work" && (
+                  <div className="space-y-3 pt-2 border-t border-slate-600">
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium text-slate-300 mb-1">Start</label>
+                        <input
+                          type="time"
+                          value={workStartTime}
+                          onChange={(e) => setWorkStartTime(e.target.value)}
+                          className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium text-slate-300 mb-1">End</label>
+                        <input
+                          type="time"
+                          value={workEndTime}
+                          onChange={(e) => setWorkEndTime(e.target.value)}
+                          className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                       <input
+                          id="incentive-check"
+                          type="checkbox"
+                          checked={isWorkIncentive}
+                          onChange={(e) => setIsWorkIncentive(e.target.checked)}
+                          className="w-4 h-4 text-primary-600 bg-slate-700 border-slate-500 rounded focus:ring-primary-500 focus:ring-2"
+                       />
+                       <label htmlFor="incentive-check" className="ml-2 text-sm font-medium text-slate-300">
+                          Incentive Shift
+                       </label>
                     </div>
                   </div>
                 )}
