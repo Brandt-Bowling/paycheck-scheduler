@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0f172a"/>
+  <g transform="translate(256 256) scale(0.7) translate(-256 -256)">
+    <!-- Background (Paper) -->
+    <rect x="64" y="64" width="384" height="384" rx="48" ry="48" fill="#f8fafc" stroke="#475569" stroke-width="16"/>
+    <!-- Header (Blueberry Pastel) -->
+    <path d="M64 112 A48 48 0 0 1 112 64 L400 64 A48 48 0 0 1 448 112 L448 160 L64 160 Z" fill="#9fa8da" stroke="#475569" stroke-width="0"/>
+    <!-- Binder Rings -->
+    <circle cx="150" cy="85" r="16" fill="#475569"/>
+    <circle cx="362" cy="85" r="16" fill="#475569"/>
+    <!-- Content: Grid Lines -->
+    <rect x="112" y="220" width="288" height="32" rx="8" fill="#cbd5e1"/>
+    <rect x="112" y="280" width="288" height="32" rx="8" fill="#cbd5e1"/>
+    <rect x="112" y="340" width="180" height="32" rx="8" fill="#cbd5e1"/>
+  </g>
+</svg>
