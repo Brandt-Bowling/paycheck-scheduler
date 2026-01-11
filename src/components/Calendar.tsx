@@ -77,7 +77,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
             <AuthStatus />
             <button
                 onClick={onOpenSettings}
-                className="p-1.5 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
                 aria-label="Settings"
             >
                 <span className="material-symbols-outlined text-base leading-none">settings</span>

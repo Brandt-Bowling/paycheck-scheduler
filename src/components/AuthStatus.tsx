@@ -12,7 +12,7 @@ const AuthStatus: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg select-none whitespace-nowrap">
+    <div className="flex items-center gap-2 px-3 h-8 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg select-none whitespace-nowrap">
       <div
         className={`w-2.5 h-2.5 rounded-full ${
           isAuthenticated ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-slate-500"
