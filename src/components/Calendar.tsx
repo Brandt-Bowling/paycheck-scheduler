@@ -73,14 +73,14 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
             {appMode === "work_only" ? 'Select dates to add a "Work" event' : "Select dates to add events"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
             <AuthStatus />
             <button
                 onClick={onOpenSettings}
-                className="p-1.5 text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                className="p-1.5 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
                 aria-label="Settings"
             >
-                <span className="material-symbols-outlined text-base">settings</span>
+                <span className="material-symbols-outlined text-base leading-none">settings</span>
             </button>
         </div>
       </header>
