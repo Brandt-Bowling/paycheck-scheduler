@@ -62,9 +62,9 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
   }, [currentDate]);
 
   return (
-    <div className="flex-1 flex flex-col pt-safe-top px-4">
+    <div className="flex-1 flex flex-col pt-safe-top">
       {/* Header */}
-      <header className="flex justify-between items-start pt-8 pb-4 gap-4">
+      <header className="flex justify-between items-start pt-8 pb-4 gap-4 px-4">
         <div>
           <h1 className="text-2xl font-medium text-slate-100 text-left">
             You go work?
@@ -86,7 +86,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
       </header>
 
       {/* Month Navigation */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-5 px-4">
         <button
           onClick={handlePrevMonth}
           aria-label="Previous month"
@@ -107,7 +107,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-1 flex flex-col pb-4">
+      <div className="flex-1 flex flex-col">
         {/* Day Names Header */}
         <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base">
           {DAY_NAMES.map((day) => (

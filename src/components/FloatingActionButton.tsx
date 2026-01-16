@@ -23,11 +23,10 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
         <div className="relative flex flex-col-reverse items-end gap-3 pointer-events-none">
           <button
               onClick={onOpenEventModal}
-              className="pointer-events-auto h-14 sm:h-16 px-6 rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center gap-3 transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700"
+              className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700"
               aria-label="Add Work Event"
           >
-              <span className="material-symbols-outlined text-xl">calendar_today</span>
-              <span className="font-medium text-lg">Create Event</span>
+              <span className="material-symbols-outlined text-2xl sm:text-3xl">add</span>
           </button>
         </div>
     );
