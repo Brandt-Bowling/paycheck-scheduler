@@ -58,6 +58,12 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
         dateString: formatDateToYYYYMMDD(new Date(year, month, day)) || undefined, // Ensure string or undefined
       });
     }
+
+    const totalSlots = 42; // 6 rows * 7 columns
+    while (days.length < totalSlots) {
+      days.push({ type: "blank" });
+    }
+
     return days;
   }, [currentDate]);
 
@@ -126,7 +132,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
               return (
                 <div
                   key={`blank-${index}`}
-                  className="calendar-day disabled p-1 sm:p-2 border border-transparent rounded-xl opacity-60"
+                  className="calendar-day disabled p-1 sm:p-2 border border-slate-800 rounded-xl opacity-60"
                 ></div>
               );
             }

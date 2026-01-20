@@ -16,8 +16,6 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  if (selectedDates.size === 0) return null;
-
   if (appMode === "work_only") {
     return (
         <div className="relative flex flex-col-reverse items-end gap-3 pointer-events-none">
