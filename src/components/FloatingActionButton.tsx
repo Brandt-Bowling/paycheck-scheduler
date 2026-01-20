@@ -4,14 +4,12 @@ import { AppMode } from "../App";
 interface FloatingActionButtonProps {
   onOpenEventModal: () => void;
   onOpenPayModal: () => void;
-  selectedDates: Set<string>;
   appMode: AppMode;
 }
 
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   onOpenEventModal,
   onOpenPayModal,
-  selectedDates,
   appMode,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);

@@ -11,9 +11,9 @@ interface CalendarProps {
 }
 
 interface CalendarDayItem {
-  type: "blank" | "day";
-  day?: number;
-  dateString?: string;
+  day: number;
+  dateString: string;
+  isCurrentMonth: boolean;
 }
 
 const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings, appMode }) => {
@@ -45,23 +45,29 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDayOfWeek = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Grid always starts on Sunday (0).
+    // Calculate the offset to the first day of the grid.
+    // If month starts on Sunday (0), offset is 1 (1st day).
+    // If month starts on Tuesday (2), offset is 1 - 2 = -1 (Last day of prev month is 0, so -1 is 2nd to last).
+    // The loop uses 1-based day index logic relative to current month.
+    const startOffset = 1 - firstDayOfWeek;
+    const totalSlots = 42; // 6 rows * 7 columns
 
     const days: CalendarDayItem[] = [];
-    for (let i = 0; i < firstDayOfWeek; i++) {
-      days.push({ type: "blank" });
-    }
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push({
-        type: "day",
-        day,
-        dateString: formatDateToYYYYMMDD(new Date(year, month, day)) || undefined, // Ensure string or undefined
-      });
-    }
 
-    const totalSlots = 42; // 6 rows * 7 columns
-    while (days.length < totalSlots) {
-      days.push({ type: "blank" });
+    for (let i = 0; i < totalSlots; i++) {
+        const dayOffset = startOffset + i;
+        const date = new Date(year, month, dayOffset);
+
+        // Manual date string construction to avoid timezone issues and ensure local YYYY-MM-DD
+        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+        days.push({
+            day: date.getDate(),
+            dateString,
+            isCurrentMonth: date.getMonth() === month
+        });
     }
 
     return days;
@@ -127,24 +133,33 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
         </div>
         {/* Dates Grid */}
         <div className="flex-1 grid grid-cols-7 grid-rows-6 gap-1.5">
-          {calendarGridData.map((item, index) => {
-            if (item.type === "blank" || !item.dateString) {
-              return (
-                <div
-                  key={`blank-${index}`}
-                  className="calendar-day disabled p-1 sm:p-2 border border-slate-800 rounded-xl opacity-60"
-                ></div>
-              );
-            }
-
+          {calendarGridData.map((item) => {
             const isSelected = selectedDates.has(item.dateString);
             const isToday = item.dateString === todayDateString;
 
-            let dayClasses =
-              "calendar-day text-slate-300 border border-slate-700 hover:border-slate-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center";
-            if (isSelected) {
-              dayClasses += " selected";
+            let dayClasses = "calendar-day rounded-xl cursor-pointer transition-colors flex items-center justify-center border ";
+
+            // Base styling depending on whether it's the current month
+            if (item.isCurrentMonth) {
+                dayClasses += "text-slate-300 border-slate-700 hover:border-slate-600 ";
+            } else {
+                dayClasses += "text-slate-600 border-slate-800 hover:border-slate-700 ";
             }
+
+            // Selection and Today states override/append
+            if (isSelected) {
+              // Ensure selected state looks good even if it's a prev/next month date
+              dayClasses += " selected";
+              // Note: 'selected' class in CSS/Tailwind usually sets background/border.
+              // We might need to check if 'selected' handles text color.
+              // Assuming global CSS or tailwind classes handle bg-primary etc.
+              // Let's rely on the previous implementation's 'selected' handling if it was class-based,
+              // but here we are constructing className string.
+              // Previous code: `if (isSelected) dayClasses += " selected";`
+              // I should look at `index.css` or verify what `selected` does.
+              // If `selected` isn't a defined utility, it might be a custom class.
+            }
+
             if (isToday) {
               dayClasses += " today";
               if (!isSelected) {
@@ -156,7 +171,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
               <div
                 key={item.dateString}
                 className={dayClasses}
-                onClick={() => onDateSelect(item.dateString as string)}
+                onClick={() => onDateSelect(item.dateString)}
               >
                 {item.day}
               </div>
