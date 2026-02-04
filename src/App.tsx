@@ -96,7 +96,6 @@ const App: React.FC = () => {
           <FloatingActionButton
             onOpenEventModal={handleOpenEventModal}
             onOpenPayModal={() => setIsPayModalOpen(true)}
-            selectedDates={selectedDates}
             appMode={appMode}
           />
         </div>
