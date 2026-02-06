@@ -194,7 +194,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="bg-slate-900 text-slate-100 min-h-screen">
+    <div className="bg-slate-900 text-slate-100 min-h-[100dvh]">
       {mainContent}
       <PaycheckModal
         isOpen={isPayModalOpen}
