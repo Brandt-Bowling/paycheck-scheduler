@@ -56,6 +56,11 @@
     font-weight: 400;
     color-scheme: light dark;
 
+    /* Apply the dark background to the body to fix PWA overscroll and gesture bar */
+    background-color: var(--color-slate-900);
+    /* Disable pull-to-refresh to prevent layout breaking */
+    overscroll-behavior-y: none;
+
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -64,8 +69,6 @@
 
     margin: 0;
     min-width: 320px;
-    /* Default text color and background will be applied via App.tsx or utility classes
-       which will now use the CSS variables from @theme. */
   }
 
   #root {
