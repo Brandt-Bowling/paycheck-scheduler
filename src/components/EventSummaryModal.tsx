@@ -310,7 +310,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         }`}
         style={{ display: isOpen ? "flex" : "none" }}
       >
-        <div className="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-4xl relative flex flex-col max-h-[90vh] overflow-hidden">
+        <div className="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-4xl relative flex flex-col max-h-[90dvh] overflow-hidden">
           <button
             onClick={onClose}
             className="absolute top-3 right-3 text-slate-400 hover:text-slate-200 p-1 leading-none text-2xl z-10"

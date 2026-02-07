@@ -119,7 +119,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col pb-2 px-2">
         {/* Day Names Header */}
         <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base">
           {DAY_NAMES.map((day) => (
