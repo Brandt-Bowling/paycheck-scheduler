@@ -74,7 +74,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
   }, [currentDate]);
 
   return (
-    <div className="flex-1 flex flex-col pt-safe-top">
+    <div className="flex-1 flex flex-col pt-safe-top pb-safe-bottom">
       {/* Header */}
       <header className="flex justify-between items-start pt-8 pb-4 gap-4 px-4">
         <div>

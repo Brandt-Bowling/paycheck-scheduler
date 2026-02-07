@@ -308,7 +308,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
       {/* Modal Content */}
       <div
-        className={`fixed inset-0 z-45 flex items-center justify-center p-4 transition-opacity ${
+        className={`fixed inset-0 z-45 flex items-center justify-center p-4 pt-safe-top pb-safe-bottom pl-safe-left pr-safe-right transition-opacity ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         style={{ display: isOpen ? "flex" : "none" }}
