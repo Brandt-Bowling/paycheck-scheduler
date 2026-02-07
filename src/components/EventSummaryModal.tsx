@@ -79,6 +79,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = useState<string>("Brandt");
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedCalendar, setSelectedCalendar] = useState<string>(import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary');
 
   // Work template specific state
   const [workStartTime, setWorkStartTime] = useState<string>("15:00");
@@ -107,6 +108,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
       if (appMode === "work_only") {
         setSelectedTemplate("hannah-work");
+        setSelectedCalendar(import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary');
       }
 
       // Reset work specific state
@@ -214,6 +216,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
           endTime,
           location,
           colorId: selectedColor || undefined,
+          calendarId: selectedCalendar,
         };
       });
   };
@@ -361,22 +364,38 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                 </h3>
 
                 {appMode !== "work_only" && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
-                      Type
-                    </label>
-                    <select
-                      value={selectedTemplate}
-                      onChange={(e) => setSelectedTemplate(e.target.value)}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
-                    >
-                      {EVENT_TEMPLATES.map((template) => (
-                        <option key={template.id} value={template.id}>
-                          {template.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-1">
+                        Calendar
+                      </label>
+                      <select
+                        value={selectedCalendar}
+                        onChange={(e) => setSelectedCalendar(e.target.value)}
+                        className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
+                      >
+                        <option value={import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary'}>Shared</option>
+                        <option value={import.meta.env.VITE_GOOGLE_PERSONAL_CALENDAR_ID || 'brandt.bowling@gmail.com'}>Personal</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-1">
+                        Type
+                      </label>
+                      <select
+                        value={selectedTemplate}
+                        onChange={(e) => setSelectedTemplate(e.target.value)}
+                        className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
+                      >
+                        {EVENT_TEMPLATES.map((template) => (
+                          <option key={template.id} value={template.id}>
+                            {template.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
                 )}
 
                 {appMode === "work_only" && (

@@ -342,7 +342,7 @@ export class GoogleCalendarService {
       }
 
       batch.add(window.gapi.client.calendar.events.insert({
-        'calendarId': this.config.calendarId,
+        'calendarId': event.calendarId || this.config.calendarId,
         'resource': resource
       }));
     });
