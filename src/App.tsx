@@ -92,7 +92,7 @@ const App: React.FC = () => {
             appMode={appMode}
           />
         </div>
-        <div className="row-start-1 col-start-1 pointer-events-none grid items-end justify-end p-4 sm:p-6 z-10">
+        <div className="row-start-1 col-start-1 pointer-events-none grid items-end justify-end p-4 sm:p-6 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] z-10">
           <FloatingActionButton
             onOpenEventModal={handleOpenEventModal}
             onOpenPayModal={() => setIsPayModalOpen(true)}
@@ -103,8 +103,8 @@ const App: React.FC = () => {
     );
   } else if (selectedTab === "paychecks") {
     mainContent = (
-      <main className="w-full px-3 pt-6 sm:pt-10 pb-28">
-        <div className="mx-auto max-w-md">
+      <main className="w-full px-3 pt-safe-top pb-28">
+        <div className="mx-auto max-w-md mt-6 sm:mt-10">
           <div className="bg-slate-800 rounded-3xl shadow-xl p-5 sm:p-8">
             <header className="text-center mb-8 relative">
               <button
@@ -131,8 +131,8 @@ const App: React.FC = () => {
     );
   } else if (selectedTab === "settings") {
     mainContent = (
-      <main className="w-full px-3 pt-6 sm:pt-10">
-        <div className="mx-auto max-w-md">
+      <main className="w-full px-3 pt-safe-top">
+        <div className="mx-auto max-w-md mt-6 sm:mt-10">
           <div className="bg-slate-800 rounded-3xl shadow-xl p-5 sm:p-8">
             <header className="text-center mb-8 relative flex items-center justify-center">
               <h1 className="text-3xl sm:text-4xl font-medium text-slate-100">

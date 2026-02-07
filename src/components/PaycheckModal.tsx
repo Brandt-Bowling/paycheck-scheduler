@@ -96,7 +96,7 @@ const PaycheckModal: React.FC<PaycheckModalProps> = ({ isOpen, onClose, selected
       ></div>
       {/* Bottom Sheet Modal */}
       <div
-        className={`fixed bottom-0 left-0 right-0 bg-slate-800 rounded-t-3xl p-5 sm:p-8 z-50 transform transition-transform ease-out duration-300 max-h-[90dvh] overflow-y-auto ${isOpen ? "translate-y-0" : "translate-y-full"}`}
+        className={`fixed bottom-0 left-0 right-0 bg-slate-800 rounded-t-3xl p-5 sm:p-8 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:pb-[calc(2rem+env(safe-area-inset-bottom))] z-50 transform transition-transform ease-out duration-300 max-h-[90dvh] overflow-y-auto ${isOpen ? "translate-y-0" : "translate-y-full"}`}
       >
         {/* Bottom Sheet Header */}
         <div className="flex justify-between items-center mb-6">
