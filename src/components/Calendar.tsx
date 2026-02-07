@@ -162,10 +162,12 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
 
             if (isToday) {
               dayClasses += " today";
-              if (!isSelected) {
-                dayClasses += " text-sky-400";
-              }
             }
+
+            const isTodayCircle = isToday && !isSelected;
+            const numberClass = isTodayCircle
+              ? "bg-sky-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-medium shadow-sm"
+              : "";
 
             return (
               <div
@@ -173,7 +175,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
                 className={dayClasses}
                 onClick={() => onDateSelect(item.dateString)}
               >
-                {item.day}
+                <span className={numberClass}>{item.day}</span>
               </div>
             );
           })}
