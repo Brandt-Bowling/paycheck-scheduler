@@ -50,6 +50,14 @@
 @import "tailwindcss";
 @layer base {
   /* Global styles (can use the CSS variables defined above) */
+  html {
+    /* Ensure the background color covers the entire viewport */
+    background-color: var(--color-slate-900);
+    height: 100%;
+    /* Disable pull-to-refresh on the root element for broader browser support */
+    overscroll-behavior-y: none;
+  }
+
   body {
     font-family: var(--font-sans);
     line-height: 1.5;
@@ -60,6 +68,7 @@
     background-color: var(--color-slate-900);
     /* Disable pull-to-refresh to prevent layout breaking */
     overscroll-behavior-y: none;
+    min-height: 100%;
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
