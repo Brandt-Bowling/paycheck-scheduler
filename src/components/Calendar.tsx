@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from "react";
-import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD } from "../utils/dateHelpers";
+import React, { useState, useMemo, useRef } from "react";
+import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD, getCalendarGridData } from "../utils/dateHelpers";
 import AuthStatus from "./AuthStatus";
+import CalendarGrid from "./CalendarGrid";
 import { AppMode } from "../App";
 
 interface CalendarProps {
@@ -10,11 +11,8 @@ interface CalendarProps {
   appMode: AppMode;
 }
 
-interface CalendarDayItem {
-  day: number;
-  dateString: string;
-  isCurrentMonth: boolean;
-}
+const SWIPE_THRESHOLD = 50; // Minimum distance to trigger a swipe
+const SNAP_VELOCITY = 0.5; // Optional: velocity-based swipe
 
 const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings, appMode }) => {
   const [currentDate, setCurrentDate] = useState(() => {
@@ -22,6 +20,14 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
     d.setDate(1); // Start with the first day of the current month
     return d;
   });
+
+  // Swipe State
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [animatingDirection, setAnimatingDirection] = useState<'prev' | 'next' | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchCurrentX = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const todayDateString = useMemo(() => formatDateToYYYYMMDD(new Date()), []);
 
@@ -41,37 +47,102 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
     });
   };
 
-  const calendarGridData = useMemo<CalendarDayItem[]>(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const getPrevMonthDate = (date: Date) => {
+    const newDate = new Date(date);
+    newDate.setMonth(newDate.getMonth() - 1);
+    return newDate;
+  };
 
-    // Grid always starts on Sunday (0).
-    // Calculate the offset to the first day of the grid.
-    // If month starts on Sunday (0), offset is 1 (1st day).
-    // If month starts on Tuesday (2), offset is 1 - 2 = -1 (Last day of prev month is 0, so -1 is 2nd to last).
-    // The loop uses 1-based day index logic relative to current month.
-    const startOffset = 1 - firstDayOfWeek;
-    const totalSlots = 42; // 6 rows * 7 columns
+  const getNextMonthDate = (date: Date) => {
+    const newDate = new Date(date);
+    newDate.setMonth(newDate.getMonth() + 1);
+    return newDate;
+  };
 
-    const days: CalendarDayItem[] = [];
+  const prevMonthDate = useMemo(() => getPrevMonthDate(currentDate), [currentDate]);
+  const nextMonthDate = useMemo(() => getNextMonthDate(currentDate), [currentDate]);
 
-    for (let i = 0; i < totalSlots; i++) {
-        const dayOffset = startOffset + i;
-        const date = new Date(year, month, dayOffset);
+  const prevCalendarGridData = useMemo(() => getCalendarGridData(prevMonthDate), [prevMonthDate]);
+  const calendarGridData = useMemo(() => getCalendarGridData(currentDate), [currentDate]);
+  const nextCalendarGridData = useMemo(() => getCalendarGridData(nextMonthDate), [nextMonthDate]);
 
-        // Manual date string construction to avoid timezone issues and ensure local YYYY-MM-DD
-        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchCurrentX.current = touchStartX.current;
+    setIsSwiping(true);
+  };
 
-        days.push({
-            day: date.getDate(),
-            dateString,
-            isCurrentMonth: date.getMonth() === month
-        });
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX.current) return;
+
+    touchCurrentX.current = e.touches[0].clientX;
+    const diff = touchCurrentX.current - touchStartX.current;
+
+    // Prevent default scroll behavior while swiping horizontally
+    if (Math.abs(diff) > 10) {
+      // It's a bit tricky to preventDefault in React synthetic events
+      // We rely on CSS touch-action: pan-y or similar on the container if needed.
     }
 
-    return days;
-  }, [currentDate]);
+    setSwipeOffset(diff);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchCurrentX.current || !containerRef.current) {
+      setIsSwiping(false);
+      setSwipeOffset(0);
+      return;
+    }
+
+    const diff = touchCurrentX.current - touchStartX.current;
+    const width = containerRef.current.offsetWidth;
+    const threshold = Math.min(SWIPE_THRESHOLD, width / 3);
+
+    setIsSwiping(false);
+
+    if (diff > threshold) {
+      // Swiped right -> prev month
+      setAnimatingDirection('prev');
+      setSwipeOffset(width); // Snap to previous month
+    } else if (diff < -threshold) {
+      // Swiped left -> next month
+      setAnimatingDirection('next');
+      setSwipeOffset(-width); // Snap to next month
+    } else {
+      // Snap back to current
+      setSwipeOffset(0);
+    }
+
+    touchStartX.current = null;
+    touchCurrentX.current = null;
+  };
+
+  const handleTransitionEnd = () => {
+    if (animatingDirection === 'prev') {
+      handlePrevMonth();
+    } else if (animatingDirection === 'next') {
+      handleNextMonth();
+    }
+
+    // Reset state silently
+    if (animatingDirection) {
+      // Disable transition temporarily while resetting position
+      setIsSwiping(true);
+      setSwipeOffset(0);
+      setAnimatingDirection(null);
+      // Re-enable transition on next frame
+      requestAnimationFrame(() => {
+        setIsSwiping(false);
+      });
+    }
+  };
+
+  const handleDateSelectWrapper = (dateString: string) => {
+    // Only allow click if not swiping significantly
+    if (Math.abs(swipeOffset) < 10) {
+      onDateSelect(dateString);
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col pt-safe-top pb-safe-bottom">
@@ -118,10 +189,13 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
         </button>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="flex-1 flex flex-col pb-2 px-2">
-        {/* Day Names Header */}
-        <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base">
+      {/* Calendar Grid Container */}
+      <div
+        className="flex-1 flex flex-col pb-2 overflow-hidden relative"
+        style={{ touchAction: 'pan-y' }}
+      >
+        {/* Day Names Header (Static) */}
+        <div className="grid grid-cols-7 gap-1.5 text-center text-sm sm:text-base px-2 z-10 bg-slate-900">
           {DAY_NAMES.map((day) => (
             <div
               key={day}
@@ -131,54 +205,54 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
             </div>
           ))}
         </div>
-        {/* Dates Grid */}
-        <div className="flex-1 grid grid-cols-7 grid-rows-6 gap-1.5">
-          {calendarGridData.map((item) => {
-            const isSelected = selectedDates.has(item.dateString);
-            const isToday = item.dateString === todayDateString;
 
-            let dayClasses = "calendar-day rounded-xl cursor-pointer transition-colors flex items-center justify-center border ";
+        {/* Swipeable Area */}
+        <div
+          ref={containerRef}
+          className="flex-1 relative w-full h-full select-none"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* We use a wide container that holds 3 months side-by-side */}
+          <div
+            className="absolute top-0 left-0 w-[300%] h-full flex"
+            style={{
+              transform: `translateX(calc(-33.333% + ${swipeOffset}px))`,
+              transition: isSwiping ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            }}
+            onTransitionEnd={handleTransitionEnd}
+          >
+            {/* Previous Month */}
+            <div className="w-1/3 h-full px-2 flex-shrink-0">
+              <CalendarGrid
+                calendarGridData={prevCalendarGridData}
+                selectedDates={selectedDates}
+                todayDateString={todayDateString}
+                onDateSelect={handleDateSelectWrapper}
+              />
+            </div>
 
-            // Base styling depending on whether it's the current month
-            if (item.isCurrentMonth) {
-                dayClasses += "text-slate-300 border-slate-700 hover:border-slate-600 ";
-            } else {
-                dayClasses += "text-slate-600 border-slate-800 hover:border-slate-700 ";
-            }
+            {/* Current Month */}
+            <div className="w-1/3 h-full px-2 flex-shrink-0">
+              <CalendarGrid
+                calendarGridData={calendarGridData}
+                selectedDates={selectedDates}
+                todayDateString={todayDateString}
+                onDateSelect={handleDateSelectWrapper}
+              />
+            </div>
 
-            // Selection and Today states override/append
-            if (isSelected) {
-              // Ensure selected state looks good even if it's a prev/next month date
-              dayClasses += " selected";
-              // Note: 'selected' class in CSS/Tailwind usually sets background/border.
-              // We might need to check if 'selected' handles text color.
-              // Assuming global CSS or tailwind classes handle bg-primary etc.
-              // Let's rely on the previous implementation's 'selected' handling if it was class-based,
-              // but here we are constructing className string.
-              // Previous code: `if (isSelected) dayClasses += " selected";`
-              // I should look at `index.css` or verify what `selected` does.
-              // If `selected` isn't a defined utility, it might be a custom class.
-            }
-
-            if (isToday) {
-              dayClasses += " today";
-            }
-
-            const isTodayCircle = isToday && !isSelected;
-            const numberClass = isTodayCircle
-              ? "bg-sky-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-medium shadow-sm"
-              : "";
-
-            return (
-              <div
-                key={item.dateString}
-                className={dayClasses}
-                onClick={() => onDateSelect(item.dateString)}
-              >
-                <span className={numberClass}>{item.day}</span>
-              </div>
-            );
-          })}
+            {/* Next Month */}
+            <div className="w-1/3 h-full px-2 flex-shrink-0">
+              <CalendarGrid
+                calendarGridData={nextCalendarGridData}
+                selectedDates={selectedDates}
+                todayDateString={todayDateString}
+                onDateSelect={handleDateSelectWrapper}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
