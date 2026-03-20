@@ -6,8 +6,10 @@ import PaycheckModal from "./components/PaycheckModal";
 import Toast from "./components/Toast";
 import { parseLocalDate } from "./utils/dateHelpers";
 import { googleCalendarService } from "./utils/googleCalendar";
+import { useTemplates } from "./utils/templates";
+import TemplateManager from "./components/TemplateManager";
 
-type NavKey = "calendar" | "paychecks" | "settings";
+type NavKey = "calendar" | "paychecks" | "settings" | "templates";
 export type AppMode = "standard" | "work_only";
 
 const App: React.FC = () => {
@@ -21,6 +23,8 @@ const App: React.FC = () => {
     const saved = localStorage.getItem("appMode");
     return (saved as AppMode) || "work_only";
   });
+
+  const { templates, saveTemplate, deleteTemplate, resetTemplates } = useTemplates();
 
   useEffect(() => {
     // Initialize Google Calendar Service on mount
@@ -186,7 +190,53 @@ const App: React.FC = () => {
                   </button>
                 </div>
               </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">
+                  Event Templates
+                </h3>
+                <button
+                  onClick={() => setSelectedTab('templates')}
+                  className="w-full text-left p-4 rounded-xl border bg-slate-700/30 border-slate-700 hover:border-slate-600 transition-all flex justify-between items-center"
+                >
+                  <div>
+                    <div className="font-medium text-slate-200 mb-1">Manage Templates</div>
+                    <div className="text-xs text-slate-400 leading-relaxed">
+                      Create, edit, or delete event templates.
+                    </div>
+                  </div>
+                  <span className="material-symbols-outlined text-slate-400">chevron_right</span>
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
+      </main>
+    );
+  } else if (selectedTab === "templates") {
+    mainContent = (
+      <main className="w-full px-3 pt-safe-top pb-28">
+        <div className="mx-auto max-w-2xl mt-6 sm:mt-10">
+          <div className="bg-slate-800 rounded-3xl shadow-xl p-5 sm:p-8">
+            <header className="text-center mb-8 relative flex items-center justify-center">
+              <button
+                onClick={() => setSelectedTab('settings')}
+                className="absolute left-0 top-1 text-slate-400 hover:text-slate-200 p-2 flex items-center gap-1"
+                aria-label="Back to settings"
+              >
+                <span className="material-symbols-outlined leading-none">arrow_back</span>
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <h1 className="text-2xl sm:text-3xl font-medium text-slate-100">
+                Templates
+              </h1>
+            </header>
+            <TemplateManager
+              templates={templates}
+              onSave={saveTemplate}
+              onDelete={deleteTemplate}
+              onReset={resetTemplates}
+            />
           </div>
         </div>
       </main>
@@ -208,6 +258,7 @@ const App: React.FC = () => {
         onError={handleShowToast}
         selectedDates={selectedDates}
         appMode={appMode}
+        templates={templates}
       />
       <Toast
         message={toastMessage}
