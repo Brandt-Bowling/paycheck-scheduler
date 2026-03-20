@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD } from "../utils/dateHelpers";
 import AuthStatus from "./AuthStatus";
 import { AppMode } from "../App";
+import { openCalendarApp } from "../utils/openCalendarApp";
 
 interface CalendarProps {
   selectedDates: Set<string>;
@@ -87,6 +88,13 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
         </div>
         <div className="flex items-center gap-2 shrink-0">
             <AuthStatus />
+            <button
+                onClick={openCalendarApp}
+                className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                aria-label="Open Calendar App"
+            >
+                <span className="material-symbols-outlined text-base leading-none">calendar_month</span>
+            </button>
             <button
                 onClick={onOpenSettings}
                 className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
