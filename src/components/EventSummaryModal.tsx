@@ -6,6 +6,7 @@ import {
 } from "../utils/dateHelpers";
 import { googleCalendarService } from "../utils/googleCalendar";
 import { AppMode } from "../App";
+import { EventTemplate, EVENT_COLORS } from "../utils/templates";
 
 interface EventSummaryModalProps {
   isOpen: boolean;
@@ -14,59 +15,8 @@ interface EventSummaryModalProps {
   onError: (message: string) => void;
   selectedDates: Set<string>;
   appMode: AppMode;
+  templates: EventTemplate[];
 }
-
-interface EventTemplate {
-  id: string;
-  name: string;
-  description: string;
-  personOptions?: string[];
-}
-
-interface EventColor {
-  id: string;
-  name: string;
-  hex: string;
-}
-
-const EVENT_COLORS: EventColor[] = [
-  { id: "1", name: "Lavender", hex: "#7986cb" },
-  { id: "2", name: "Sage", hex: "#33b679" },
-  { id: "3", name: "Grape", hex: "#8e24aa" },
-  { id: "4", name: "Flamingo", hex: "#e67c73" },
-  { id: "5", name: "Banana", hex: "#f6bf26" },
-  { id: "6", name: "Tangerine", hex: "#f4511e" },
-  { id: "7", name: "Peacock", hex: "#039be5" },
-  { id: "8", name: "Graphite", hex: "#616161" },
-  { id: "9", name: "Blueberry", hex: "#3f51b5" },
-  { id: "10", name: "Basil", hex: "#0b8043" },
-  { id: "11", name: "Tomato", hex: "#d50000" },
-];
-
-const EVENT_TEMPLATES: EventTemplate[] = [
-  {
-    id: "school-dropoff",
-    name: "School Drop Off",
-    description: "School drop off duty",
-    personOptions: ["Brandt", "Hannah"],
-  },
-  {
-    id: "school-pickup",
-    name: "School Pick Up",
-    description: "School pick up duty",
-    personOptions: ["Brandt", "Hannah"],
-  },
-  {
-    id: "office-day",
-    name: "Office Day",
-    description: "Brandt's office day",
-  },
-  {
-    id: "hannah-work",
-    name: "Work",
-    description: "Hannah's work shift",
-  },
-];
 
 const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   isOpen,
@@ -75,6 +25,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   onError,
   selectedDates,
   appMode,
+  templates,
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = useState<string>("Brandt");
@@ -112,8 +63,9 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
       }
 
       // Reset work specific state
-      setWorkStartTime("15:00");
-      setWorkEndTime("23:30");
+      const workTemplate = templates.find(t => t.id === "hannah-work");
+      setWorkStartTime(workTemplate?.defaultStartTime || "15:00");
+      setWorkEndTime(workTemplate?.defaultEndTime || "23:30");
       setIsWorkIncentive(false);
 
       setIsInitializing(true);
@@ -127,16 +79,13 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Update default color when template changes
   useEffect(() => {
-    if (selectedTemplate.includes("school")) {
-      setSelectedColor("9"); // Blueberry
-    } else if (selectedTemplate === "office-day") {
-      setSelectedColor("11"); // Tomato
-    } else if (selectedTemplate === "hannah-work") {
-      setSelectedColor("4"); // Flamingo
+    const template = templates.find((t) => t.id === selectedTemplate);
+    if (template?.defaultColorId) {
+      setSelectedColor(template.defaultColorId);
     } else {
-      setSelectedColor(""); // Default
+      setSelectedColor("");
     }
-  }, [selectedTemplate]);
+  }, [selectedTemplate, templates]);
 
   const handleToggleTargetDate = (date: string) => {
     setTargetedDates((prev) => {
@@ -160,24 +109,22 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Helper to generate event objects based on current state
   const generateEvents = (): CalendarEvent[] => {
-    const template = EVENT_TEMPLATES.find((t) => t.id === selectedTemplate);
+    const template = templates.find((t) => t.id === selectedTemplate);
     if (!template) return [];
 
-    const person = template.personOptions ? `(${selectedPerson})` : "";
+    const person = template.personOptions?.length ? `(${selectedPerson})` : "";
     const commonLocation = "1300 N Prospect Rd, Ypsilanti, MI 48198";
 
     return Array.from(targetedDates)
       .sort()
       .map((dateStr) => {
         const date = parseLocalDate(dateStr);
-        let startTime: string | undefined;
-        let endTime: string | undefined;
-        let location: string | undefined;
+        let startTime: string | undefined = template.defaultStartTime;
+        let endTime: string | undefined = template.defaultEndTime;
+        let location: string | undefined = template.defaultLocation;
 
         if (template.id === "school-dropoff") {
-          startTime = "07:50";
-          endTime = "08:00";
-          location = commonLocation;
+          // Defaults handle this, but leaving explicit override capability
         } else if (template.id === "school-pickup" && date) {
           const day = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
           // Tue(2), Thu(4) -> 11:55am-12:00pm
@@ -195,7 +142,6 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         } else if (template.id === "hannah-work") {
           startTime = workStartTime;
           endTime = workEndTime;
-          location = "5301 McAuley Dr, Ypsilanti, MI 48197";
         }
 
         let summary = `${template.name} ${person}`;
@@ -388,7 +334,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                         onChange={(e) => setSelectedTemplate(e.target.value)}
                         className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
                       >
-                        {EVENT_TEMPLATES.map((template) => (
+                        {templates.map((template) => (
                           <option key={template.id} value={template.id}>
                             {template.name}
                           </option>
@@ -404,13 +350,13 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                   </div>
                 )}
 
-                {EVENT_TEMPLATES.find((t) => t.id === selectedTemplate)?.personOptions && (
+                {templates.find((t) => t.id === selectedTemplate)?.personOptions && templates.find((t) => t.id === selectedTemplate)!.personOptions!.length > 0 && (
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">
                       Person
                     </label>
                     <div className="flex gap-2">
-                      {EVENT_TEMPLATES.find((t) => t.id === selectedTemplate)?.personOptions?.map((person) => (
+                      {templates.find((t) => t.id === selectedTemplate)?.personOptions?.map((person) => (
                         <button
                           key={person}
                           onClick={() => setSelectedPerson(person)}
