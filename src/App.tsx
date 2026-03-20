@@ -19,6 +19,7 @@ const App: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<NavKey>("calendar");
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [appMode, setAppMode] = useState<AppMode>(() => {
     const saved = localStorage.getItem("appMode");
     return (saved as AppMode) || "work_only";
@@ -60,6 +61,14 @@ const App: React.FC = () => {
     });
   };
 
+  const handleClearDate = (dateString: string): void => {
+    setSelectedDates((prevDates) => {
+      const newDates = new Set(prevDates);
+      newDates.delete(dateString);
+      return newDates;
+    });
+  };
+
   const handleOpenEventModal = async (): Promise<void> => {
     if (selectedDates.size === 0) {
       alert("Please select at least one date.");
@@ -79,6 +88,56 @@ const App: React.FC = () => {
     setIsEventModalOpen(true);
   };
 
+  const handleQuickAddWorkEvents = async () => {
+    if (selectedDates.size === 0) return;
+
+    if (!googleCalendarService.isAuthenticated()) {
+      try {
+        await googleCalendarService.authenticate();
+        handleShowToast("Successfully authenticated with Google!");
+      } catch (error) {
+        console.error("Authentication failed", error);
+        return;
+      }
+    }
+
+    const workTemplate = templates.find((t) => t.id === "hannah-work");
+    if (!workTemplate) {
+      handleShowToast("Work template not found.");
+      return;
+    }
+
+    const selectedCalendar = import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary';
+    const commonLocation = "1300 N Prospect Rd, Ypsilanti, MI 48198"; // Usually used for school, but keeping it empty for work as it wasn't there
+    const person = workTemplate.personOptions?.length ? "(Hannah)" : "";
+
+    const events = Array.from(selectedDates).sort().map(dateStr => {
+      let summary = `${workTemplate.name} ${person}`.trim();
+      return {
+        summary,
+        description: workTemplate.description,
+        date: dateStr,
+        startTime: workTemplate.defaultStartTime || "15:00",
+        endTime: workTemplate.defaultEndTime || "23:30",
+        location: workTemplate.defaultLocation,
+        colorId: workTemplate.defaultColorId || undefined,
+        calendarId: selectedCalendar,
+      };
+    });
+
+    setIsSyncing(true);
+    try {
+      await googleCalendarService.addEvents(events);
+      setSelectedDates(new Set());
+      handleShowToast("Successfully added to calendar!");
+    } catch (error: any) {
+      console.error("Sync failed", error);
+      handleShowToast(error.message || "Failed to add events.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const sortedSelectedDates = useMemo(
     () => Array.from(selectedDates).sort(),
     [selectedDates]
@@ -96,11 +155,15 @@ const App: React.FC = () => {
             appMode={appMode}
           />
         </div>
-        <div className="row-start-1 col-start-1 pointer-events-none grid items-end justify-end p-4 sm:p-6 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] z-10">
+        <div className="row-start-1 col-start-1 pointer-events-none z-10">
           <FloatingActionButton
             onOpenEventModal={handleOpenEventModal}
             onOpenPayModal={() => setIsPayModalOpen(true)}
             appMode={appMode}
+            selectedDates={selectedDates}
+            onClearDate={handleClearDate}
+            onQuickAdd={handleQuickAddWorkEvents}
+            isSyncing={isSyncing}
           />
         </div>
       </main>
