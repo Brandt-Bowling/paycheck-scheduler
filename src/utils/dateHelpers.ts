@@ -15,6 +15,44 @@ export const MONTH_NAMES: string[] = [
   "December",
 ];
 
+export interface CalendarDayItem {
+  day: number;
+  dateString: string;
+  isCurrentMonth: boolean;
+}
+
+export const getCalendarGridData = (date: Date): CalendarDayItem[] => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+
+  // Grid always starts on Sunday (0).
+  // Calculate the offset to the first day of the grid.
+  // If month starts on Sunday (0), offset is 1 (1st day).
+  // If month starts on Tuesday (2), offset is 1 - 2 = -1 (Last day of prev month is 0, so -1 is 2nd to last).
+  // The loop uses 1-based day index logic relative to current month.
+  const startOffset = 1 - firstDayOfWeek;
+  const totalSlots = 42; // 6 rows * 7 columns
+
+  const days: CalendarDayItem[] = [];
+
+  for (let i = 0; i < totalSlots; i++) {
+      const dayOffset = startOffset + i;
+      const currentDate = new Date(year, month, dayOffset);
+
+      // Manual date string construction to avoid timezone issues and ensure local YYYY-MM-DD
+      const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+
+      days.push({
+          day: currentDate.getDate(),
+          dateString,
+          isCurrentMonth: currentDate.getMonth() === month
+      });
+  }
+
+  return days;
+};
+
 export interface CalendarEvent {
   summary: string;
   description: string;
