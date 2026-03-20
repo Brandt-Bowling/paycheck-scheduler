@@ -130,9 +130,13 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
       setIsSwiping(true);
       setSwipeOffset(0);
       setAnimatingDirection(null);
-      // Re-enable transition on next frame
+
+      // Re-enable transition after the browser has guaranteed a reflow/repaint
+      // using a double requestAnimationFrame
       requestAnimationFrame(() => {
-        setIsSwiping(false);
+        requestAnimationFrame(() => {
+          setIsSwiping(false);
+        });
       });
     }
   };
