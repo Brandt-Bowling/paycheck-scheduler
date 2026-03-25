@@ -392,5 +392,5 @@ export class GoogleCalendarService {
 
 export const googleCalendarService = new GoogleCalendarService({
     clientId: '', // Will be fetched from backend
-    calendarId: import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary'
+    calendarId: (import.meta as any).env.VITE_GOOGLE_CALENDAR_ID || 'primary'
 });

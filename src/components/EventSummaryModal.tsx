@@ -30,7 +30,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<string>("school-dropoff");
   const [selectedPerson, setSelectedPerson] = useState<string>("Brandt");
   const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedCalendar, setSelectedCalendar] = useState<string>(import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary');
+  const [selectedCalendar, setSelectedCalendar] = useState<string>((import.meta as any).env.VITE_GOOGLE_CALENDAR_ID || 'primary');
 
   // Work template specific state
   const [workStartTime, setWorkStartTime] = useState<string>("15:00");
@@ -59,7 +59,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
       if (appMode === "work_only") {
         setSelectedTemplate("hannah-work");
-        setSelectedCalendar(import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary');
+        setSelectedCalendar((import.meta as any).env.VITE_GOOGLE_CALENDAR_ID || 'primary');
       }
 
       // Reset work specific state
@@ -126,7 +126,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         if (template.id === "school-dropoff") {
           // Defaults handle this, but leaving explicit override capability
         } else if (template.id === "school-pickup" && date) {
-          const day = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+          const day = date.dayOfWeek; // 1=Mon, ..., 7=Sun
           // Tue(2), Thu(4) -> 11:55am-12:00pm
           if (day === 2 || day === 4) {
             startTime = "11:55";
@@ -320,8 +320,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                         onChange={(e) => setSelectedCalendar(e.target.value)}
                         className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
                       >
-                        <option value={import.meta.env.VITE_GOOGLE_CALENDAR_ID || 'primary'}>Shared</option>
-                        <option value={import.meta.env.VITE_GOOGLE_PERSONAL_CALENDAR_ID || 'brandt.bowling@gmail.com'}>Personal</option>
+                        <option value={(import.meta as any).env.VITE_GOOGLE_CALENDAR_ID || 'primary'}>Shared</option>
+                        <option value={(import.meta as any).env.VITE_GOOGLE_PERSONAL_CALENDAR_ID || 'brandt.bowling@gmail.com'}>Personal</option>
                       </select>
                     </div>
 
@@ -457,7 +457,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                                     : "bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-500"
                                 }`}
                              >
-                                 {date ? date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', weekday: 'short' }) : dateStr}
+                                 {date ? date.toLocaleString(undefined, { month: 'short', day: 'numeric', weekday: 'short' }) : dateStr}
                              </button>
                          )
                     })}
@@ -525,7 +525,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                                               {event.summary}
                                           </div>
                                           <div className="text-xs text-slate-400 mt-1">
-                                              {date ? date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : event.date}
+                                              {date ? date.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : event.date}
                                               {event.startTime && ` • ${event.startTime}-${event.endTime}`}
                                           </div>
                                           {eventColor && (

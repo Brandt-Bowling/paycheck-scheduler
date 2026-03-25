@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from "react";
+import { Temporal } from "@js-temporal/polyfill";
 import { DAY_NAMES, MONTH_NAMES, formatDateToYYYYMMDD, getCalendarGridData } from "../utils/dateHelpers";
 import AuthStatus from "./AuthStatus";
 import CalendarGrid from "./CalendarGrid";
@@ -17,9 +18,8 @@ const SNAP_VELOCITY = 0.5; // Optional: velocity-based swipe
 
 const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings, appMode }) => {
   const [currentDate, setCurrentDate] = useState(() => {
-    const d = new Date();
-    d.setDate(1); // Start with the first day of the current month
-    return d;
+    const now = Temporal.Now.plainDateISO();
+    return now.with({ day: 1 });
   });
 
   // Swipe State
@@ -30,34 +30,22 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
   const touchCurrentX = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const todayDateString = useMemo(() => formatDateToYYYYMMDD(new Date()), []);
+  const todayDateString = useMemo(() => formatDateToYYYYMMDD(Temporal.Now.plainDateISO()) || "", []);
 
   const handlePrevMonth = (): void => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setMonth(newDate.getMonth() - 1);
-      return newDate;
-    });
+    setCurrentDate((prev) => prev.subtract({ months: 1 }));
   };
 
   const handleNextMonth = (): void => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setMonth(newDate.getMonth() + 1);
-      return newDate;
-    });
+    setCurrentDate((prev) => prev.add({ months: 1 }));
   };
 
-  const getPrevMonthDate = (date: Date) => {
-    const newDate = new Date(date);
-    newDate.setMonth(newDate.getMonth() - 1);
-    return newDate;
+  const getPrevMonthDate = (date: Temporal.PlainDate) => {
+    return date.subtract({ months: 1 });
   };
 
-  const getNextMonthDate = (date: Date) => {
-    const newDate = new Date(date);
-    newDate.setMonth(newDate.getMonth() + 1);
-    return newDate;
+  const getNextMonthDate = (date: Temporal.PlainDate) => {
+    return date.add({ months: 1 });
   };
 
   const prevMonthDate = useMemo(() => getPrevMonthDate(currentDate), [currentDate]);
@@ -190,7 +178,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
           <span className="material-symbols-outlined text-2xl">chevron_left</span>
         </button>
         <h2 className="text-xl sm:text-2xl font-medium text-slate-200">
-          {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
+          {MONTH_NAMES[currentDate.month - 1]} {currentDate.year}
         </h2>
         <button
           onClick={handleNextMonth}

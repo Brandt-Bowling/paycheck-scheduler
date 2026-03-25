@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
+import { Temporal } from "@js-temporal/polyfill";
 import { formatDateToYYYYMMDD, parseLocalDate } from "../utils/dateHelpers";
 
 interface PaycheckModalProps {
@@ -29,11 +30,14 @@ const PaycheckModal: React.FC<PaycheckModalProps> = ({ isOpen, onClose, selected
   });
 
   useEffect(() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const defaultStartDate = new Date();
-    defaultStartDate.setDate(today.getDate() + diffToMonday);
+    const today = Temporal.Now.plainDateISO();
+    const dayOfWeek = today.dayOfWeek; // 1 = Monday, 7 = Sunday
+    // if today is Monday (1), diffToMonday is 0
+    // if today is Tuesday (2), diffToMonday is -1
+    // if today is Sunday (7), diffToMonday is -6
+    const diffToMonday = 1 - dayOfWeek;
+
+    const defaultStartDate = today.add({ days: diffToMonday });
     const formattedDefaultDate = formatDateToYYYYMMDD(defaultStartDate);
     if (formattedDefaultDate) {
         setPayPeriodStart(formattedDefaultDate);
@@ -51,14 +55,17 @@ const PaycheckModal: React.FC<PaycheckModalProps> = ({ isOpen, onClose, selected
     const periodStartDate = parseLocalDate(payPeriodStart);
     if (!periodStartDate) return;
 
-    const periodEndDate = new Date(periodStartDate);
-    periodEndDate.setDate(periodStartDate.getDate() + length - 1);
+    const periodEndDate = periodStartDate.add({ days: length - 1 });
 
     let eventsInCurrentPeriod = 0;
     selectedDates.forEach((dateStr) => {
       const eventDate = parseLocalDate(dateStr);
-      if (eventDate && eventDate >= periodStartDate && eventDate <= periodEndDate) {
-        eventsInCurrentPeriod++;
+      if (eventDate) {
+        const isAfterOrEqualStart = Temporal.PlainDate.compare(eventDate, periodStartDate) >= 0;
+        const isBeforeOrEqualEnd = Temporal.PlainDate.compare(eventDate, periodEndDate) <= 0;
+        if (isAfterOrEqualStart && isBeforeOrEqualEnd) {
+          eventsInCurrentPeriod++;
+        }
       }
     });
 
