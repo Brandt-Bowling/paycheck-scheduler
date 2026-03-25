@@ -145,9 +145,11 @@ const App: React.FC = () => {
 
   let mainContent;
   if (selectedTab === "calendar") {
+    const isTrayVisible = appMode === "work_only" && selectedDates.size > 0;
+
     mainContent = (
       <main className="w-full h-[100dvh] grid grid-rows-1 grid-cols-1 bg-slate-900">
-        <div className="row-start-1 col-start-1 flex flex-col h-full overflow-hidden">
+        <div className={`row-start-1 col-start-1 flex flex-col h-full overflow-hidden transition-all duration-300 ease-in-out ${isTrayVisible ? "pb-36" : ""}`}>
           <Calendar
             selectedDates={selectedDates}
             onDateSelect={handleDateSelect}
