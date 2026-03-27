@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Temporal } from "@js-temporal/polyfill";
 import { EventTemplate, EVENT_COLORS } from "../utils/templates";
 
 interface TemplateManagerProps {
@@ -25,7 +26,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
 
   const handleCreateNew = () => {
     setEditingTemplate({
-      id: "custom-" + Date.now(),
+      id: "custom-" + Temporal.Now.instant().epochMilliseconds,
       name: "New Template",
       description: "",
       personOptions: [],
