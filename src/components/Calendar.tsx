@@ -18,7 +18,7 @@ const SNAP_VELOCITY = 0.5; // Optional: velocity-based swipe
 
 const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpenSettings, appMode }) => {
   const [currentDate, setCurrentDate] = useState(() => {
-    const now = Temporal.Now.plainDateISO();
+    const now = Temporal.Now.plainDateISO(Temporal.Now.timeZoneId());
     return now.with({ day: 1 });
   });
 
@@ -30,7 +30,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
   const touchCurrentX = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const todayDateString = useMemo(() => formatDateToYYYYMMDD(Temporal.Now.plainDateISO()) || "", []);
+  const todayDateString = useMemo(() => formatDateToYYYYMMDD(Temporal.Now.plainDateISO(Temporal.Now.timeZoneId())) || "", []);
 
   const handlePrevMonth = (): void => {
     setCurrentDate((prev) => prev.subtract({ months: 1 }));

@@ -30,7 +30,7 @@ const PaycheckModal: React.FC<PaycheckModalProps> = ({ isOpen, onClose, selected
   });
 
   useEffect(() => {
-    const today = Temporal.Now.plainDateISO();
+    const today = Temporal.Now.plainDateISO(Temporal.Now.timeZoneId());
     const dayOfWeek = today.dayOfWeek; // 1 = Monday, 7 = Sunday
     // if today is Monday (1), diffToMonday is 0
     // if today is Tuesday (2), diffToMonday is -1
