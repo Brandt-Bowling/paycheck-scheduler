@@ -241,6 +241,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Sort available dates for display
   const availableDatesList = Array.from(selectedDates).sort();
+  const currentTemplate = templates.find((t) => t.id === selectedTemplate);
 
   return (
     <>
@@ -350,13 +351,13 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                   </div>
                 )}
 
-                {templates.find((t) => t.id === selectedTemplate)?.personOptions && templates.find((t) => t.id === selectedTemplate)!.personOptions!.length > 0 && (
+                {currentTemplate?.personOptions && currentTemplate.personOptions.length > 0 && (
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">
                       Person
                     </label>
                     <div className="flex gap-2">
-                      {templates.find((t) => t.id === selectedTemplate)?.personOptions?.map((person) => (
+                      {currentTemplate.personOptions.map((person) => (
                         <button
                           key={person}
                           onClick={() => setSelectedPerson(person)}
