@@ -32,6 +32,11 @@ export const EVENT_COLORS: EventColor[] = [
   { id: "11", name: "Tomato", hex: "#d50000" },
 ];
 
+export const EVENT_COLORS_MAP: Record<string, EventColor> = EVENT_COLORS.reduce((acc, color) => {
+  acc[color.id] = color;
+  return acc;
+}, {} as Record<string, EventColor>);
+
 export const DEFAULT_TEMPLATES: EventTemplate[] = [
   {
     id: "school-dropoff",

@@ -6,7 +6,7 @@ import {
 } from "../utils/dateHelpers";
 import { googleCalendarService } from "../utils/googleCalendar";
 import { AppMode } from "../App";
-import { EventTemplate, EVENT_COLORS } from "../utils/templates";
+import { EventTemplate, EVENT_COLORS, EVENT_COLORS_MAP } from "../utils/templates";
 
 interface EventSummaryModalProps {
   isOpen: boolean;
@@ -510,7 +510,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                       ) : (
                           queuedEvents.map((event, idx) => {
                               const date = parseLocalDate(event.date);
-                              const eventColor = EVENT_COLORS.find(c => c.id === event.colorId);
+                              const eventColor = event.colorId ? EVENT_COLORS_MAP[event.colorId] : undefined;
 
                               return (
                                   <div key={idx} className="bg-slate-800 border border-slate-700 p-3 rounded-lg flex justify-between items-start group relative overflow-hidden">
