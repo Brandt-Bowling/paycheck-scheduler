@@ -243,6 +243,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Sort available dates for display
   const availableDatesList = Array.from(selectedDates).sort();
+  const currentTemplate = templates.find((t) => t.id === selectedTemplate);
 
   return (
     <>
