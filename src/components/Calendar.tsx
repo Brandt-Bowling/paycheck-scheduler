@@ -153,15 +153,17 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
             <AuthStatus />
             <button
                 onClick={openCalendarApp}
-                className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                 aria-label="Open Calendar App"
+                title="Open Calendar App"
             >
                 <span className="material-symbols-outlined text-base leading-none">calendar_month</span>
             </button>
             <button
                 onClick={onOpenSettings}
-                className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg"
+                className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800/80 backdrop-blur-sm rounded-full border border-slate-700 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                 aria-label="Settings"
+                title="Settings"
             >
                 <span className="material-symbols-outlined text-base leading-none">settings</span>
             </button>
@@ -173,7 +175,8 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
         <button
           onClick={handlePrevMonth}
           aria-label="Previous month"
-          className="p-2.5 rounded-full hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
+          title="Previous month"
+          className="p-2.5 rounded-full hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
         >
           <span className="material-symbols-outlined text-2xl">chevron_left</span>
         </button>
@@ -183,7 +186,8 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDates, onDateSelect, onOpen
         <button
           onClick={handleNextMonth}
           aria-label="Next month"
-          className="p-2.5 rounded-full hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
+          title="Next month"
+          className="p-2.5 rounded-full hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
         >
           <span className="material-symbols-outlined text-2xl">chevron_right</span>
         </button>

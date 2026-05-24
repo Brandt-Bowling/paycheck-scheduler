@@ -1,0 +1,3 @@
+## 2024-05-24 - Interactive Element Accessibility
+**Learning:** Icon-only buttons (like calendar settings and navigation) lacked sufficient ARIA labels, title attributes, and visible focus states for keyboard users. Changing custom `div` elements acting as buttons to semantic `<button>` elements significantly improves a11y out of the box (like in the calendar grid).
+**Action:** When working on interactive elements, always verify that keyboard accessibility (focus rings, tab order) and screen-reader accessibility (aria-labels, role="button") are present. Using native HTML `<button>` elements instead of `<div>` with `onClick` is preferred.
