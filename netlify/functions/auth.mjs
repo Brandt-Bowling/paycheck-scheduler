@@ -72,8 +72,7 @@ export default async (req, context) => {
 
   } catch (error) {
     console.error('Auth Error:', error);
-    const message = error.message || 'Internal Server Error';
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
