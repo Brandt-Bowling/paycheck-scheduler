@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   createIcsContent,
   parseLocalDate,
@@ -48,6 +48,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
+  const currentTemplate = useMemo(() => {
+    return templates.find((t) => t.id === selectedTemplate);
+  }, [templates, selectedTemplate]);
+
   // Initialize targetedDates when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -79,13 +83,12 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Update default color when template changes
   useEffect(() => {
-    const template = templates.find((t) => t.id === selectedTemplate);
-    if (template?.defaultColorId) {
-      setSelectedColor(template.defaultColorId);
+    if (currentTemplate?.defaultColorId) {
+      setSelectedColor(currentTemplate.defaultColorId);
     } else {
       setSelectedColor("");
     }
-  }, [selectedTemplate, templates]);
+  }, [currentTemplate]);
 
   const handleToggleTargetDate = (date: string) => {
     setTargetedDates((prev) => {
@@ -109,23 +112,22 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Helper to generate event objects based on current state
   const generateEvents = (): CalendarEvent[] => {
-    const template = templates.find((t) => t.id === selectedTemplate);
-    if (!template) return [];
+    if (!currentTemplate) return [];
 
-    const person = template.personOptions?.length ? `(${selectedPerson})` : "";
+    const person = currentTemplate.personOptions?.length ? `(${selectedPerson})` : "";
     const commonLocation = "1300 N Prospect Rd, Ypsilanti, MI 48198";
 
     return Array.from(targetedDates)
       .sort()
       .map((dateStr) => {
         const date = parseLocalDate(dateStr);
-        let startTime: string | undefined = template.defaultStartTime;
-        let endTime: string | undefined = template.defaultEndTime;
-        let location: string | undefined = template.defaultLocation;
+        let startTime: string | undefined = currentTemplate.defaultStartTime;
+        let endTime: string | undefined = currentTemplate.defaultEndTime;
+        let location: string | undefined = currentTemplate.defaultLocation;
 
-        if (template.id === "school-dropoff") {
+        if (currentTemplate.id === "school-dropoff") {
           // Defaults handle this, but leaving explicit override capability
-        } else if (template.id === "school-pickup" && date) {
+        } else if (currentTemplate.id === "school-pickup" && date) {
           const day = date.dayOfWeek; // 1=Mon, ..., 7=Sun
           // Tue(2), Thu(4) -> 11:55am-12:00pm
           if (day === 2 || day === 4) {
@@ -137,15 +139,15 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
             endTime = "15:00";
           }
           location = commonLocation;
-        } else if (template.id === "office-day") {
+        } else if (currentTemplate.id === "office-day") {
           // No specific time
-        } else if (template.id === "hannah-work") {
+        } else if (currentTemplate.id === "hannah-work") {
           startTime = workStartTime;
           endTime = workEndTime;
         }
 
-        let summary = `${template.name} ${person}`;
-        if (template.id === "hannah-work" && isWorkIncentive && startTime && endTime) {
+        let summary = `${currentTemplate.name} ${person}`;
+        if (currentTemplate.id === "hannah-work" && isWorkIncentive && startTime && endTime) {
            const formatTime = (t: string) => {
              const [h, m] = t.split(':').map(Number);
              const disp = h > 12 ? h - 12 : (h === 0 || h === 12 ? 12 : h);
@@ -156,7 +158,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
         return {
           summary: summary.trim(),
-          description: template.description,
+          description: currentTemplate.description,
           date: dateStr,
           startTime,
           endTime,
@@ -350,13 +352,13 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                   </div>
                 )}
 
-                {templates.find((t) => t.id === selectedTemplate)?.personOptions && templates.find((t) => t.id === selectedTemplate)!.personOptions!.length > 0 && (
+                {currentTemplate?.personOptions && currentTemplate.personOptions.length > 0 && (
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">
                       Person
                     </label>
                     <div className="flex gap-2">
-                      {templates.find((t) => t.id === selectedTemplate)?.personOptions?.map((person) => (
+                      {currentTemplate.personOptions.map((person) => (
                         <button
                           key={person}
                           onClick={() => setSelectedPerson(person)}
