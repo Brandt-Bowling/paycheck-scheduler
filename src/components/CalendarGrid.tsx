@@ -44,13 +44,16 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           : "";
 
         return (
-          <div
+          <button
             key={item.dateString}
-            className={dayClasses}
+            type="button"
+            className={`${dayClasses} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:z-10`}
             onClick={() => onDateSelect(item.dateString)}
+            aria-label={`${isSelected ? "Deselect" : "Select"} date ${item.dateString}`}
+            aria-pressed={isSelected}
           >
             <span className={numberClass}>{item.day}</span>
-          </div>
+          </button>
         );
       })}
     </div>

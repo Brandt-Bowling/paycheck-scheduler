@@ -19,8 +19,9 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
         <div className="relative flex flex-col-reverse items-end gap-3 pointer-events-none">
           <button
               onClick={onOpenEventModal}
-              className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700"
+              className="pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-primary-500"
               aria-label="Add Work Event"
+              title="Add Work Event"
           >
               <span className="material-symbols-outlined text-2xl sm:text-3xl">add</span>
           </button>
@@ -33,10 +34,11 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
       {/* Main FAB */}
       <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700 ${
+          className={`pointer-events-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-2xl bg-primary-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-primary-500 ${
             isExpanded ? "rotate-45 bg-slate-800 hover:bg-slate-700" : ""
           }`}
           aria-label={isExpanded ? "Close menu" : "Open menu"}
+          title={isExpanded ? "Close menu" : "Open menu"}
           aria-expanded={isExpanded}
         >
           <span className="material-symbols-outlined text-2xl sm:text-3xl">add</span>
@@ -57,8 +59,10 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
             </span>
             <button
               onClick={onOpenPayModal}
-              className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-sky-500"
               aria-label="Pay Estimator"
+              title="Pay Estimator"
+              tabIndex={isExpanded ? 0 : -1}
             >
               <span className="material-symbols-outlined text-xl">attach_money</span>
             </button>
@@ -69,8 +73,10 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
             </span>
             <button
               onClick={onOpenEventModal}
-              className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800"
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-700 text-white shadow-md transition-all hover:bg-slate-600 active:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-sky-500"
               aria-label="Templates"
+              title="Templates"
+              tabIndex={isExpanded ? 0 : -1}
             >
               <span className="material-symbols-outlined text-xl">calendar_today</span>
             </button>
