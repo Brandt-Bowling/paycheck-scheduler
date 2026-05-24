@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Temporal } from "@js-temporal/polyfill";
 import { EventTemplate, EVENT_COLORS } from "../utils/templates";
 
+const eventColorMap = new Map(EVENT_COLORS.map(c => [c.id, c]));
+
 interface TemplateManagerProps {
   templates: EventTemplate[];
   onSave: (template: EventTemplate) => void;
@@ -190,7 +192,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
 
       <div className="space-y-3">
         {templates.map((template) => {
-          const colorObj = EVENT_COLORS.find(c => c.id === template.defaultColorId);
+          const colorObj = template.defaultColorId ? eventColorMap.get(template.defaultColorId) : undefined;
           return (
             <div key={template.id} className="bg-slate-700/50 border border-slate-700 rounded-xl p-4 flex justify-between items-center group overflow-hidden relative">
               {colorObj && (
