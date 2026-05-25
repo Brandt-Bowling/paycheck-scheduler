@@ -113,7 +113,7 @@ const App: React.FC = () => {
             <header className="text-center mb-8 relative">
               <button
                   onClick={() => setSelectedTab('calendar')}
-                  className="absolute left-0 top-1 text-slate-400 hover:text-slate-200"
+                  className="absolute left-0 top-1 text-slate-400 hover:text-slate-200" aria-label="Back to calendar"
               >
                   &larr; Back
               </button>
