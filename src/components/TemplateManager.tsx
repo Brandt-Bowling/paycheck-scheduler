@@ -74,8 +74,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Name</label>
-          <input
+          <label htmlFor="templateName" className="block text-sm font-medium text-slate-300 mb-1">Name</label>
+          <input id="templateName"
             type="text"
             value={editingTemplate.name}
             onChange={(e) => setEditingTemplate({ ...editingTemplate, name: e.target.value })}
@@ -85,8 +85,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Description (Optional)</label>
-          <input
+          <label htmlFor="templateDesc" className="block text-sm font-medium text-slate-300 mb-1">Description (Optional)</label>
+          <input id="templateDesc"
             type="text"
             value={editingTemplate.description}
             onChange={(e) => setEditingTemplate({ ...editingTemplate, description: e.target.value })}
@@ -96,8 +96,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">People Options (comma separated)</label>
-          <input
+          <label htmlFor="templatePeople" className="block text-sm font-medium text-slate-300 mb-1">People Options (comma separated)</label>
+          <input id="templatePeople"
             type="text"
             value={personOptionsInput}
             onChange={(e) => setPersonOptionsInput(e.target.value)}
@@ -109,8 +109,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Default Start Time</label>
-              <input
+              <label htmlFor="templateStartTime" className="block text-sm font-medium text-slate-300 mb-1">Default Start Time</label>
+              <input id="templateStartTime"
                 type="time"
                 value={editingTemplate.defaultStartTime || ""}
                 onChange={(e) => setEditingTemplate({ ...editingTemplate, defaultStartTime: e.target.value })}
@@ -118,8 +118,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Default End Time</label>
-              <input
+              <label htmlFor="templateEndTime" className="block text-sm font-medium text-slate-300 mb-1">Default End Time</label>
+              <input id="templateEndTime"
                 type="time"
                 value={editingTemplate.defaultEndTime || ""}
                 onChange={(e) => setEditingTemplate({ ...editingTemplate, defaultEndTime: e.target.value })}
@@ -129,8 +129,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Default Location</label>
-          <input
+          <label htmlFor="templateLocation" className="block text-sm font-medium text-slate-300 mb-1">Default Location</label>
+          <input id="templateLocation"
             type="text"
             value={editingTemplate.defaultLocation || ""}
             onChange={(e) => setEditingTemplate({ ...editingTemplate, defaultLocation: e.target.value })}
@@ -140,8 +140,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">Default Color</label>
-          <select
+          <label htmlFor="templateColor" className="block text-sm font-medium text-slate-300 mb-1">Default Color</label>
+          <select id="templateColor"
             value={editingTemplate.defaultColorId || ""}
             onChange={(e) => setEditingTemplate({ ...editingTemplate, defaultColorId: e.target.value })}
             className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"

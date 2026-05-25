@@ -243,7 +243,6 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
   // Sort available dates for display
   const availableDatesList = Array.from(selectedDates).sort();
-  const currentTemplate = templates.find((t) => t.id === selectedTemplate);
 
   return (
     <>
@@ -315,10 +314,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                 {appMode !== "work_only" && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-1">
+                      <label htmlFor="eventCalendar" className="block text-sm font-medium text-slate-300 mb-1">
                         Calendar
                       </label>
-                      <select
+                      <select id="eventCalendar"
                         value={selectedCalendar}
                         onChange={(e) => setSelectedCalendar(e.target.value)}
                         className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
@@ -329,10 +328,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-1">
+                      <label htmlFor="eventType" className="block text-sm font-medium text-slate-300 mb-1">
                         Type
                       </label>
-                      <select
+                      <select id="eventType"
                         value={selectedTemplate}
                         onChange={(e) => setSelectedTemplate(e.target.value)}
                         className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
@@ -355,10 +354,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
 
                 {currentTemplate?.personOptions && currentTemplate.personOptions.length > 0 && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                    <label id="personGroupLabel" className="block text-sm font-medium text-slate-300 mb-1">
                       Person
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" role="group" aria-labelledby="personGroupLabel">
                       {currentTemplate.personOptions.map((person) => (
                         <button
                           key={person}
@@ -381,8 +380,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                   <div className="space-y-3 pt-2 border-t border-slate-600">
                     <div className="flex gap-4">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Start</label>
-                        <input
+                        <label htmlFor="workStartTime" className="block text-sm font-medium text-slate-300 mb-1">Start</label>
+                        <input id="workStartTime"
                           type="time"
                           value={workStartTime}
                           onChange={(e) => setWorkStartTime(e.target.value)}
@@ -390,8 +389,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-slate-300 mb-1">End</label>
-                        <input
+                        <label htmlFor="workEndTime" className="block text-sm font-medium text-slate-300 mb-1">End</label>
+                        <input id="workEndTime"
                           type="time"
                           value={workEndTime}
                           onChange={(e) => setWorkEndTime(e.target.value)}
@@ -415,10 +414,10 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label htmlFor="eventColor" className="block text-sm font-medium text-slate-300 mb-1">
                     Color
                   </label>
-                  <select
+                  <select id="eventColor"
                     value={selectedColor}
                     onChange={(e) => setSelectedColor(e.target.value)}
                     className="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-primary-500"
