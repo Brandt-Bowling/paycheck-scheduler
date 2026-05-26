@@ -264,7 +264,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         <div className="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-4xl relative flex flex-col max-h-[90dvh] overflow-hidden">
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 text-slate-400 hover:text-slate-200 p-1 leading-none text-2xl z-10"
+            className="absolute top-3 right-3 text-slate-400 hover:text-slate-200 p-1 leading-none text-2xl z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-md"
             aria-label="Close"
           >
             &times;
@@ -279,7 +279,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
             <div className="flex md:hidden bg-slate-700/50 p-1 rounded-xl mb-4 shrink-0">
               <button
                   onClick={() => setActiveTab('configure')}
-                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                       activeTab === 'configure'
                       ? "bg-slate-600 text-white shadow-sm"
                       : "text-slate-400 hover:text-slate-200"
@@ -289,7 +289,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
               </button>
               <button
                   onClick={() => setActiveTab('review')}
-                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                       activeTab === 'review'
                       ? "bg-slate-600 text-white shadow-sm"
                       : "text-slate-400 hover:text-slate-200"
@@ -362,7 +362,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                         <button
                           key={person}
                           onClick={() => setSelectedPerson(person)}
-                          className={`flex-1 py-1.5 px-3 rounded-lg font-medium text-sm transition-colors ${
+                          className={`flex-1 py-1.5 px-3 rounded-lg font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                             selectedPerson === person
                               ? "bg-primary-600 text-white"
                               : "bg-slate-700 border border-slate-600 text-slate-300 hover:bg-slate-600"
@@ -439,9 +439,9 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                       2. Select Dates
                     </h3>
                     <div className="flex gap-2 text-xs">
-                        <button onClick={handleSelectAllTargetDates} className="text-primary-400 hover:text-primary-300">All</button>
+                        <button onClick={handleSelectAllTargetDates} className="text-primary-400 hover:text-primary-300 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 px-1">All</button>
                         <span className="text-slate-600">|</span>
-                        <button onClick={handleClearTargetDates} className="text-primary-400 hover:text-primary-300">None</button>
+                        <button onClick={handleClearTargetDates} className="text-primary-400 hover:text-primary-300 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 px-1">None</button>
                     </div>
                  </div>
 
@@ -453,7 +453,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                              <button
                                 key={dateStr}
                                 onClick={() => handleToggleTargetDate(dateStr)}
-                                className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                                className={`px-3 py-1.5 rounded-full text-sm border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                                     isSelected
                                     ? "bg-primary-600/20 border-primary-500 text-primary-200"
                                     : "bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-500"
@@ -471,7 +471,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                 <button
                     onClick={handleWorkOnlySubmit}
                     disabled={targetedDates.size === 0 || isSyncing || isInitializing}
-                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20 flex items-center justify-center gap-2"
+                    title={targetedDates.size === 0 ? "Please select at least one date" : undefined}
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 >
                     {isSyncing || isInitializing ? (
                         <>
@@ -490,7 +491,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                 <button
                     onClick={handleAddEvents}
                     disabled={targetedDates.size === 0}
-                    className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
+                    title={targetedDates.size === 0 ? "Please select at least one date" : undefined}
+                    className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 >
                     Add to Queue
                 </button>
@@ -539,7 +541,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                                       </div>
                                       <button
                                           onClick={() => handleRemoveEvent(idx)}
-                                          className="text-slate-500 hover:text-red-400 p-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
+                                          className="text-slate-500 hover:text-red-400 p-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                                           aria-label="Remove event"
                                       >
                                           &times;
@@ -554,7 +556,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                       <button
                           onClick={handleAddToGoogleCalendar}
                           disabled={queuedEvents.length === 0 || isSyncing || isInitializing}
-                          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20 flex items-center justify-center gap-2"
+                          title={queuedEvents.length === 0 ? "Please add at least one event to the queue" : undefined}
+                          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                       >
                           {isSyncing || isInitializing ? (
                             <>
@@ -584,7 +587,8 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                       <button
                           onClick={handleDownloadIcs}
                           disabled={queuedEvents.length === 0}
-                          className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-4 rounded-lg text-sm transition-colors"
+                          title={queuedEvents.length === 0 ? "Please add at least one event to the queue" : undefined}
+                          className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-4 rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                       >
                           Download .ics instead
                       </button>
