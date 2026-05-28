@@ -1,3 +1,3 @@
-## 2024-05-24 - Interactive Element Accessibility
-**Learning:** Icon-only buttons (like calendar settings and navigation) lacked sufficient ARIA labels, title attributes, and visible focus states for keyboard users. Changing custom `div` elements acting as buttons to semantic `<button>` elements significantly improves a11y out of the box (like in the calendar grid).
-**Action:** When working on interactive elements, always verify that keyboard accessibility (focus rings, tab order) and screen-reader accessibility (aria-labels, role="button") are present. Using native HTML `<button>` elements instead of `<div>` with `onClick` is preferred.
+## 2024-05-18 - Tooltips for Disabled States
+**Learning:** Adding dynamic `title` attributes to disabled action buttons is a highly effective, low-effort micro-UX improvement that provides immediate context for users without requiring new UI components or complex state management.
+**Action:** Always check if disabled buttons provide a clear reason for being disabled, and add tooltips using the `title` attribute if they do not.

@@ -471,6 +471,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                 <button
                     onClick={handleWorkOnlySubmit}
                     disabled={targetedDates.size === 0 || isSyncing || isInitializing}
+                    title={isInitializing ? "Initializing calendar service..." : isSyncing ? "Syncing..." : targetedDates.size === 0 ? "Please select at least one date" : ""}
                     className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20 flex items-center justify-center gap-2"
                 >
                     {isSyncing || isInitializing ? (
@@ -490,6 +491,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                 <button
                     onClick={handleAddEvents}
                     disabled={targetedDates.size === 0}
+                    title={targetedDates.size === 0 ? "Please select at least one date" : ""}
                     className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
                 >
                     Add to Queue
@@ -554,6 +556,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                       <button
                           onClick={handleAddToGoogleCalendar}
                           disabled={queuedEvents.length === 0 || isSyncing || isInitializing}
+                          title={isInitializing ? "Initializing calendar service..." : isSyncing ? "Syncing..." : queuedEvents.length === 0 ? "Please add at least one event to the queue" : ""}
                           className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-primary-900/20 flex items-center justify-center gap-2"
                       >
                           {isSyncing || isInitializing ? (
@@ -584,6 +587,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
                       <button
                           onClick={handleDownloadIcs}
                           disabled={queuedEvents.length === 0}
+                          title={queuedEvents.length === 0 ? "Please add at least one event to the queue" : ""}
                           className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-4 rounded-lg text-sm transition-colors"
                       >
                           Download .ics instead
