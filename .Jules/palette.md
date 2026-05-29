@@ -1,3 +1,6 @@
 ## 2024-05-24 - Interactive Element Accessibility
 **Learning:** Icon-only buttons (like calendar settings and navigation) lacked sufficient ARIA labels, title attributes, and visible focus states for keyboard users. Changing custom `div` elements acting as buttons to semantic `<button>` elements significantly improves a11y out of the box (like in the calendar grid).
 **Action:** When working on interactive elements, always verify that keyboard accessibility (focus rings, tab order) and screen-reader accessibility (aria-labels, role="button") are present. Using native HTML `<button>` elements instead of `<div>` with `onClick` is preferred.
+## 2026-05-29 - [Disabled Button Tooltips]
+**Learning:** Browser quirks (specifically WebKit/Blink) mean that native `title` attributes on `disabled` `<button>` elements do not emit pointer events, preventing the tooltip from displaying on hover for many users.
+**Action:** When asked to add tooltips to disabled buttons, instead of adding `title` directly to the button, either wrap the button in a `<span>` or `<div>` and place the `title` there, or use `aria-disabled="true"` and handle the disabled styling and click prevention manually, to ensure tooltips remain accessible.
