@@ -47,7 +47,7 @@ export const DEFAULT_TEMPLATES: EventTemplate[] = [
     defaultColorId: "9",
     defaultStartTime: "07:50",
     defaultEndTime: "08:00",
-    defaultLocation: "1300 N Prospect Rd, Ypsilanti, MI 48198"
+    defaultLocation: "Huron Valley Catholic School"
   },
   {
     id: "school-pickup",
@@ -56,8 +56,9 @@ export const DEFAULT_TEMPLATES: EventTemplate[] = [
     personOptions: ["Brandt", "Hannah"],
     isSystem: true,
     defaultColorId: "9",
-    // startTime/endTime is dynamic based on day of week for this system template
-    defaultLocation: "1300 N Prospect Rd, Ypsilanti, MI 48198"
+    defaultStartTime: "14:55",
+    defaultEndTime: "15:00",
+    defaultLocation: "Huron Valley Catholic School"
   },
   {
     id: "office-day",

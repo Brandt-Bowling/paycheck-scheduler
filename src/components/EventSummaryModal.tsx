@@ -115,7 +115,6 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
     if (!currentTemplate) return [];
 
     const person = currentTemplate.personOptions?.length ? `(${selectedPerson})` : "";
-    const commonLocation = "1300 N Prospect Rd, Ypsilanti, MI 48198";
 
     return Array.from(targetedDates)
       .sort()
@@ -125,23 +124,7 @@ const EventSummaryModal: React.FC<EventSummaryModalProps> = ({
         let endTime: string | undefined = currentTemplate.defaultEndTime;
         let location: string | undefined = currentTemplate.defaultLocation;
 
-        if (currentTemplate.id === "school-dropoff") {
-          // Defaults handle this, but leaving explicit override capability
-        } else if (currentTemplate.id === "school-pickup" && date) {
-          const day = date.dayOfWeek; // 1=Mon, ..., 7=Sun
-          // Tue(2), Thu(4) -> 11:55am-12:00pm
-          if (day === 2 || day === 4) {
-            startTime = "11:55";
-            endTime = "12:00";
-          } else {
-            // Mon, Wed, Fri -> 2:55-3:00pm
-            startTime = "14:55";
-            endTime = "15:00";
-          }
-          location = commonLocation;
-        } else if (currentTemplate.id === "office-day") {
-          // No specific time
-        } else if (currentTemplate.id === "hannah-work") {
+        if (currentTemplate.id === "hannah-work") {
           startTime = workStartTime;
           endTime = workEndTime;
         }
