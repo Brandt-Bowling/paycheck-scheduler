@@ -62,7 +62,7 @@ const App: React.FC = () => {
 
   const handleOpenEventModal = async (): Promise<void> => {
     if (selectedDates.size === 0) {
-      alert("Please select at least one date.");
+      handleShowToast("Please select at least one date.");
       return;
     }
 

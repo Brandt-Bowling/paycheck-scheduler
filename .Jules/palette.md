@@ -5,3 +5,7 @@
 ## 2026-05-26 - Focus visibility and Disabled State Clarity
 **Learning:** Interactive elements in complex modals (like EventSummaryModal) often lose custom focus rings if not explicitly styled with `focus-visible:ring-sky-500`. Furthermore, disabled submit buttons can cause confusion if they lack context; adding a `title` attribute to explain *why* it's disabled (e.g., 'Please add at least one event') provides an immediate UX win without structural changes.
 **Action:** Standardize adding `focus-visible:ring-2 focus-visible:ring-sky-500` to all clickable elements, and always provide a `title` tooltip for disabled action buttons.
+
+## 2024-06-01 - Accessible Toast Notifications & Non-blocking Alerts
+**Learning:** Native `window.alert()` halts execution and creates a jarring UX, while custom toast notifications often lack screen reader support without explicit ARIA roles.
+**Action:** Replace blocking native alerts with custom toast components, and ensure toast containers use `role="alert"` and `aria-live="assertive"` to reliably announce dynamic updates to screen reader users.
