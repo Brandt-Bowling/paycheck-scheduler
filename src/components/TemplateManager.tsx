@@ -158,14 +158,15 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-700">
           <button
             onClick={handleCancel}
-            className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-600"
+            className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={!editingTemplate.name.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-lg shadow-primary-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            title={!editingTemplate.name.trim() ? "Template name is required" : undefined}
+            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors shadow-lg shadow-primary-900/20 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >
             Save Template
           </button>
@@ -182,7 +183,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         </h2>
         <button
           onClick={handleCreateNew}
-          className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1"
+          className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded px-1"
         >
           <span className="material-symbols-outlined text-sm">add</span> Add New
         </button>
@@ -225,7 +226,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
               <div className="flex gap-2">
                 <button
                   onClick={() => handleEdit(template)}
-                  className="p-2 text-slate-400 hover:text-primary-400 hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-primary-400 hover:bg-slate-700 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                   aria-label="Edit template"
                   title="Edit template"
                 >
@@ -234,7 +235,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
                 {!template.isSystem && (
                   <button
                     onClick={() => handleDelete(template.id)}
-                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded-lg transition-colors"
+                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     aria-label="Delete template"
                     title="Delete template"
                   >
@@ -250,7 +251,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
       <div className="mt-8 pt-6 border-t border-slate-700 text-center">
          <button
             onClick={handleConfirmReset}
-            className="text-red-400 hover:text-red-300 text-xs font-medium"
+            className="text-red-400 hover:text-red-300 text-xs font-medium rounded px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
          >
             Reset All to Default
          </button>
