@@ -9,3 +9,6 @@
 ## 2024-06-01 - Accessible Toast Notifications & Non-blocking Alerts
 **Learning:** Native `window.alert()` halts execution and creates a jarring UX, while custom toast notifications often lack screen reader support without explicit ARIA roles.
 **Action:** Replace blocking native alerts with custom toast components, and ensure toast containers use `role="alert"` and `aria-live="assertive"` to reliably announce dynamic updates to screen reader users.
+## 2024-05-24 - Focus States on Top-Level Navigation
+**Learning:** Found that custom top-level navigation buttons in views (like back/close buttons) lacked keyboard focus states, breaking the accessibility pattern used in component-level elements.
+**Action:** Always ensure that structural or custom navigational buttons receive the design system's default focus ring (`focus-visible:ring-sky-500`) just like standard UI components.
