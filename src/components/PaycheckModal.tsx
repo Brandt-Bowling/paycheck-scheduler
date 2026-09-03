@@ -110,7 +110,7 @@ const PaycheckModal: React.FC<PaycheckModalProps> = ({ isOpen, onClose, selected
           <h2 className="text-xl font-medium text-slate-200">Paycheck Estimator</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-slate-400 hover:bg-slate-700 hover:text-slate-200 transition-colors"
+            className="p-2 rounded-full text-slate-400 hover:bg-slate-700 hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
             aria-label="Close paycheck settings"
           >
             <span className="material-symbols-outlined text-2xl">close</span>
@@ -217,7 +217,7 @@ const PaycheckModal: React.FC<PaycheckModalProps> = ({ isOpen, onClose, selected
           </div>
           <button
             onClick={onClose}
-            className="mt-6 w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-3 px-5 rounded-full"
+            className="mt-6 w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-3 px-5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-800"
           >
             Done
           </button>

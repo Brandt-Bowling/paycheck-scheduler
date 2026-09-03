@@ -113,7 +113,7 @@ const App: React.FC = () => {
             <header className="text-center mb-8 relative">
               <button
                   onClick={() => setSelectedTab('calendar')}
-                  className="absolute left-0 top-1 text-slate-400 hover:text-slate-200" aria-label="Back to calendar"
+                  className="absolute left-0 top-1 text-slate-400 hover:text-slate-200 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" aria-label="Back to calendar"
               >
                   &larr; Back
               </button>
@@ -144,7 +144,7 @@ const App: React.FC = () => {
               </h1>
               <button
                 onClick={() => setSelectedTab('calendar')}
-                className="absolute right-0 top-1 text-slate-400 hover:text-slate-200 p-2"
+                className="absolute right-0 top-1 text-slate-400 hover:text-slate-200 p-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                 aria-label="Close settings"
               >
                 <span className="text-2xl leading-none">&times;</span>
@@ -221,7 +221,7 @@ const App: React.FC = () => {
             <header className="text-center mb-8 relative flex items-center justify-center">
               <button
                 onClick={() => setSelectedTab('settings')}
-                className="absolute left-0 top-1 text-slate-400 hover:text-slate-200 p-2 flex items-center gap-1"
+                className="absolute left-0 top-1 text-slate-400 hover:text-slate-200 p-2 flex items-center gap-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                 aria-label="Back to settings"
               >
                 <span className="material-symbols-outlined leading-none">arrow_back</span>
